@@ -64,8 +64,8 @@ def test_t18_mocked_gemini_schema_failure_falls_back():
             for m in gemini_client.model_chain(settings)])
     raw, engine, attempts = run_extraction((PACK / "D05.pdf").read_bytes(), "application/pdf", s, gemini=broken)
     assert engine == "offline_regex" and raw.invoice_number.value == "AFS-2026-77"
-    assert [a["engine"] for a in attempts] == ["gemini:gemini-3.8-flash", "gemini:gemini-3.6-flash",
-                                               "gemini:gemini-2.5-flash-lite", "offline_regex"]
+    assert [a["engine"] for a in attempts] == ["gemini:gemini-3.5-flash-lite", "gemini:gemini-3.6-flash",
+                                               "gemini:gemini-3.8-flash", "offline_regex"]
 
 
 def test_t18_real_client_records_every_model_failure(monkeypatch):

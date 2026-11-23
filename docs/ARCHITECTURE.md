@@ -10,6 +10,7 @@
 
 ## Gemini circuit breaker
 
+- **Model chain:** `GEMINI_MODEL` (default `gemini-3.5-flash-lite`), then `GEMINI_FALLBACK_MODELS` (default `gemini-3.6-flash,gemini-3.8-flash`), then the offline parser. `gemini-2.5-flash-lite` was dropped because it returns 404 for new users. On 2026-11-23, structured output validated with `gemini-3.5-flash-lite` (about 24 s for the first call; later calls 3–4 s). The other models returned 503/504 that day. No thinking setting is sent: `thinking_budget=0` was rejected (400) by `gemini-3.5-flash-lite`, and `thinking_level=MINIMAL` was rejected (400) by `gemini-3.8-flash`.
 - **Timeout:** each Gemini call times out after `GEMINI_TIMEOUT_S` seconds (default 20). Gemini rejects deadlines under 10 s ("Minimum allowed deadline is 10s"), so smaller values are raised to 10 with a logged warning. A non-integer value is a startup error.
 - **Batches:** one upload request, or one `reset-demo`, is one batch. A `Breaker` is shared across the batch.
 - **How each failure is handled:**

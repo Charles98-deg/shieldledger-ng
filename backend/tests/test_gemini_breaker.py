@@ -88,7 +88,7 @@ def test_mocked_timeout_one_gemini_attempt_per_upload_batch(client, monkeypatch)
     with_key(client)
     results = upload_pack(client)
     assert len(results) == 12 and all(r["engine"] == "offline_regex" for r in results)
-    assert seen.calls == ["gemini-3.8-flash"]          # one attempt, no fallbacks, no retries per document
+    assert seen.calls == ["gemini-3.5-flash-lite"]          # one attempt, no fallbacks, no retries per document
     assert seen.timeouts == [20_000]
     docs = client.get("/api/documents").json()
     assert len(docs) == 12
@@ -131,7 +131,7 @@ def test_invalid_key_is_fatal_no_fallbacks(monkeypatch):
     for p in PDFS[:4]:
         raw, engine, _ = run_extraction(p.read_bytes(), "application/pdf", s, breaker=b)
         assert engine == "offline_regex" and raw is not None
-    assert seen.calls == ["gemini-3.8-flash"] and b.is_open and b.calls == 1
+    assert seen.calls == ["gemini-3.5-flash-lite"] and b.is_open and b.calls == 1
 
 
 def test_model_specific_failure_does_not_trip_breaker(monkeypatch):
@@ -142,7 +142,7 @@ def test_model_specific_failure_does_not_trip_breaker(monkeypatch):
     for p in PDFS[:2]:
         _, engine, _ = run_extraction(p.read_bytes(), "application/pdf", s, breaker=b)
         assert engine == "offline_regex"
-    assert seen.calls == ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"] * 2
+    assert seen.calls == ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.8-flash"] * 2
     assert not b.is_open and b.failures == 2
 
 
@@ -167,14 +167,14 @@ def test_400_on_one_model_falls_through_to_next(monkeypatch):
     """A 400 INVALID_ARGUMENT (e.g. "Minimum allowed deadline is 10s") is a configuration error for that
     model: the next model is tried, and its success is used. The breaker stays closed."""
     def behaviour(model):
-        if model == "gemini-3.8-flash":
+        if model == "gemini-3.5-flash-lite":
             raise _api_error(400, "INVALID_ARGUMENT", "Minimum allowed deadline is 10s")
         return _valid_llm_json()
     seen = fake_genai(monkeypatch, behaviour)
     s = replace(config.get_settings(), gemini_api_key="test-key")
     b = gemini_client.Breaker()
     raw, engine, attempts = run_extraction(PDFS[0].read_bytes(), "application/pdf", s, breaker=b)
-    assert seen.calls == ["gemini-3.8-flash", "gemini-3.6-flash"]
+    assert seen.calls == ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
     assert engine == "gemini:gemini-3.6-flash" and raw.vendor_name.value == "Efik Agro-Inputs Ltd"
     assert attempts[0]["ok"] is False and attempts[0]["kind"] == "model" and "deadline" in attempts[0]["error"]
     assert attempts[1] == {"engine": "gemini:gemini-3.6-flash", "ok": True}
@@ -195,7 +195,7 @@ def test_auth_and_quota_errors_trip_breaker(monkeypatch, code, status, msg, kind
     for p in PDFS[:3]:
         _, engine, attempts = run_extraction(p.read_bytes(), "application/pdf", s, breaker=b)
         assert engine == "offline_regex"
-    assert seen.calls == ["gemini-3.8-flash"] and b.is_open
+    assert seen.calls == ["gemini-3.5-flash-lite"] and b.is_open
     assert gemini_client.classify(_api_error(code, status, msg)) == kind
 
 

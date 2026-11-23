@@ -77,13 +77,13 @@ def gemini_timeout_s(raw: str | None) -> int:
 
 
 def get_settings() -> Settings:
-    fallbacks = os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-2.5-flash-lite")
+    fallbacks = os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-3.8-flash")
     today = os.getenv("APP_TODAY")
     return Settings(
         app_env=os.getenv("APP_ENV", "dev"),
         db_path=os.getenv("SHIELDLEDGER_DB", str(BACKEND / "shieldledger.db")),
         gemini_api_key=os.getenv("GEMINI_API_KEY") or None,
-        gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
         gemini_fallback_models=tuple(m.strip() for m in fallbacks.split(",") if m.strip()),
         app_today=date.fromisoformat(today) if today else None,
         gemini_timeout_s=gemini_timeout_s(os.getenv("GEMINI_TIMEOUT_S")),

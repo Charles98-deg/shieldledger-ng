@@ -179,14 +179,7 @@ Frontend: `npm run build` produces **59.98 KB gzip** JS and 4.51 KB gzip CSS (bu
 
 - The offline parser only handles the demo-pack `Label: value` layout. Other PDFs go to human review (a validation or low-confidence flag), not to a guess.
 - Images (PNG/JPEG) need Gemini. Without it they go to `NEEDS_HUMAN_REVIEW` with `OFFLINE_NO_OCR`.
-- **Gemini structured-output status (live smoke runs, 2026-11-23):**
-  - **First run:** no key was present, and the script reported `SKIPPED`.
-  - **Second key:** rejected (`400 API_KEY_INVALID`).
-  - **Current key, default chain:** no model succeeded.
-    - `gemini-3.8-flash` returned `503 UNAVAILABLE` (high demand) or timed out.
-    - `gemini-3.6-flash` returned `504 DEADLINE_EXCEEDED`.
-    - `gemini-2.5-flash-lite` returned `404` ("no longer available to new users").
-  - **One success:** a diagnostic run with `GEMINI_MODEL=gemini-3.5-flash-lite` and `GEMINI_TIMEOUT_S=60` succeeded in about 24 s, and its structured JSON validated against `RawInvoiceLLM`. The chain defaults are unchanged.
+- **Gemini structured-output status:** on 2026-11-23 structured output validated against `RawInvoiceLLM` with **`gemini-3.5-flash-lite`**, now the default model. The first validated call took about 24 s per PDF; later calls that day took 3–4 s. The other models returned 503 (high demand) or 504 (deadline exceeded) that day. `gemini-2.5-flash-lite` was dropped from the chain because it returns 404 for new users. Default chain: `gemini-3.5-flash-lite` → `gemini-3.6-flash` → `gemini-3.8-flash` → `offline_regex`.
   - **Recording:** the demo runs on `offline_regex`. With a key set, the first PDF of a batch can wait up to the 20 s timeout before the breaker sends the rest offline.
 - The taxpayer registry is a seeded fictional table, not a live NRS lookup.
 - All thresholds (price/quantity tolerances, duplicate fuzz and window, split-PO band, PO approval limit) are buyer-configurable policies, not law.
