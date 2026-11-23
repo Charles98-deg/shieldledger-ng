@@ -4,6 +4,7 @@ import { ConservationBar } from "../components/ConservationBar";
 import { ErrorBox, Loading } from "../components/Drawer";
 import { MetricCard } from "../components/MetricCard";
 import { StatusLabel } from "../components/StatusLabel";
+import { CheckMark } from "../components/Icons";
 import { naira } from "../money";
 import type { AuditVerify, Summary } from "../types";
 
@@ -94,35 +95,39 @@ export function ExposureSummary({ refreshKey }: { refreshKey: number }) {
         ]}
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Pending verification holds</h2>
-          <p className="tnum mt-2 text-2xl font-bold">{naira(s.pending_verification_holds)}</p>
-          <p className="mt-1 text-xs text-zinc-500">Held until registration / VAT registration is proven. Not counted as saved.</p>
-        </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Advisories (not counted)</h2>
-          <p className="tnum mt-2 text-2xl font-bold text-sky-200">{naira(s.advisories.vat_self_account)}</p>
-          <p className="mt-1 text-xs text-zinc-500">
+      <section aria-label="Also in this batch" className="divide-y divide-zinc-800 rounded-lg border border-zinc-700 bg-zinc-900">
+        <div className="grid gap-x-6 gap-y-1 px-4 py-3 sm:grid-cols-[16rem_12rem_1fr] sm:items-baseline">
+          <h2 className="font-bold text-zinc-100">Pending verification holds</h2>
+          <p className="tnum text-lg font-bold text-zinc-100 sm:text-right">{naira(s.pending_verification_holds)}</p>
+          <p className="text-sm text-zinc-400">Held until registration or VAT registration is proven. Not counted as saved.</p>
+        </div>
+        <div className="grid gap-x-6 gap-y-1 px-4 py-3 sm:grid-cols-[16rem_12rem_1fr] sm:items-baseline">
+          <h2 className="font-bold text-zinc-100">Advisories (not counted)</h2>
+          <p className="tnum text-lg font-bold text-sky-300 sm:text-right">{naira(s.advisories.vat_self_account)}</p>
+          <p className="text-sm text-zinc-400">
             VAT self-account exposure where VAT was omitted; the Service <em>may</em> direct this (NTA s.155(2)).
           </p>
-        </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Audit chain</h2>
-          {audit && (
-            <p className={`mt-2 text-lg font-bold ${audit.ok ? "text-emerald-300" : "text-red-300"}`} role="status">
-              {audit.ok ? `Audit chain intact: ${audit.checked} events` : `Chain broken at event #${audit.first_bad_id}`}
+        </div>
+        {s.needs_review_count > 0 && (
+          <div className="grid gap-x-6 gap-y-1 px-4 py-3 sm:grid-cols-[16rem_12rem_1fr] sm:items-baseline">
+            <h2 className="font-bold text-zinc-100">Needs a person</h2>
+            <p className="tnum text-lg font-bold text-zinc-100 sm:text-right">{s.needs_review_count} invoice{s.needs_review_count === 1 ? "" : "s"}</p>
+            <p className="text-sm text-zinc-400">Excluded from every figure on this page until a person has reviewed it.</p>
+          </div>
+        )}
+        <div className="grid gap-x-6 gap-y-1 px-4 py-3 sm:grid-cols-[16rem_12rem_1fr] sm:items-baseline">
+          <h2 className="font-bold text-zinc-100">Audit chain</h2>
+          {audit ? (
+            <p className={`inline-flex items-center gap-1.5 font-bold sm:justify-end ${audit.ok ? "text-emerald-300" : "text-red-300"}`} role="status">
+              <CheckMark ok={audit.ok} />
+              {audit.ok ? `Intact: ${audit.checked} events` : `Broken at event #${audit.first_bad_id}`}
             </p>
+          ) : (
+            <p className="text-sm text-zinc-400 sm:text-right">Checking…</p>
           )}
-          <p className="mt-1 text-xs text-zinc-500">SHA-256 hash chain, append-only (UPDATE/DELETE blocked by DB triggers).</p>
-        </section>
-      </div>
-
-      {s.needs_review_count > 0 && (
-        <p className="rounded border border-zinc-700 bg-zinc-900 p-3 text-sm text-zinc-300">
-          Needs human review: <strong>{s.needs_review_count}</strong> (excluded from all figures above).
-        </p>
-      )}
+          <p className="text-sm text-zinc-400">SHA-256 hash chain, append-only (UPDATE/DELETE blocked by DB triggers).</p>
+        </div>
+      </section>
 
       {fv && (fv.quotes.length > 0 || fv.company_examples.length > 0) && (
         <section className="rounded-lg border border-zinc-800 p-4 text-sm">

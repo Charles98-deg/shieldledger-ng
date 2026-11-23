@@ -71,32 +71,32 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <header className="bg-adire-900 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 sm:px-6 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-center gap-3 pb-1 md:pb-3">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex items-center gap-3 pb-1 lg:pb-3">
             <Mark />
             <div>
               <div className="text-lg font-bold leading-tight tracking-[-0.01em]">ShieldLedger NG</div>
-              <div className="text-xs text-adire-200">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
+              <div className="text-xs text-adire-200 lg:hidden xl:block">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
             </div>
           </div>
-          <nav className="-mx-1 flex flex-wrap items-end gap-x-1 gap-y-2" aria-label="Screens">
+          <nav className="-mx-1 flex flex-wrap items-end gap-x-1 gap-y-2 lg:flex-nowrap" aria-label="Screens">
             {TABS.map((t) => (
               <a
                 key={t.id}
                 href={`#/${t.id}`}
                 aria-current={tab === t.id ? "page" : undefined}
-                className={`rounded-t px-3.5 py-2.5 text-sm font-semibold ${
+                className={`whitespace-nowrap rounded-t px-3.5 py-2.5 text-sm font-semibold ${
                   tab === t.id ? "bg-zinc-950 text-adire-900" : "text-adire-100 hover:bg-adire-800 hover:text-white"
                 }`}
               >
                 {t.label}
               </a>
             ))}
-            <span className="mx-2 hidden h-6 w-px self-center bg-adire-700 md:inline-block" />
-            <button onClick={() => setRegisterOpen(true)} className="mb-1.5 rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+            <span className="mx-2 hidden h-6 w-px self-center bg-adire-700 lg:inline-block" />
+            <button onClick={() => setRegisterOpen(true)} className="mb-1.5 whitespace-nowrap rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
               Statutory Register
             </button>
-            <button onClick={() => setPoliciesOpen(true)} className="mb-1.5 rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+            <button onClick={() => setPoliciesOpen(true)} className="mb-1.5 whitespace-nowrap rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
               Policies
             </button>
           </nav>

@@ -31,6 +31,22 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Naira sign: one-glyph subset of Noto Sans; none of the text faces has U+20A6. */
+@font-face {
+  font-family: "SL Naira";
+  font-weight: 100 549;
+  font-display: swap;
+  src: url("/fonts/naira-regular.woff2") format("woff2");
+  unicode-range: U+20A6;
+}
+@font-face {
+  font-family: "SL Naira";
+  font-weight: 550 900;
+  font-display: swap;
+  src: url("/fonts/naira-bold.woff2") format("woff2");
+  unicode-range: U+20A6;
+}
+
 /* Figures: plain (unslashed) zeros for money and body numbers. Only digits and separators come
    from Public Sans; letters stay Atkinson. Codes and invoice numbers use Atkinson Mono,
    which keeps its distinct zero. */
@@ -131,5 +147,46 @@ textarea {
   .drawer-panel[data-state="closed"] {
     transform: none;
     opacity: 0;
+  }
+}
+
+/* Settlement tape: adding-machine figures. Digits come from the plain-zero figure face, set tabular;
+   labels and the ₦ sign from Atkinson Mono. */
+.tape {
+  font-family: "SL Naira", "SL Figures", "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+}
+@media (max-width: 639px) {
+  .tape {
+    font-family: "SL Naira", "SL Figures", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  }
+}
+.stamp {
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px currentColor;
+}
+
+/* Case-file change: a short settle-in so the swap reads as "new case", not a flicker. */
+@keyframes casefile-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.casefile-in {
+  animation: casefile-in 200ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes casefile-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .casefile-in {
+    animation: casefile-fade 160ms ease;
+  }
+  .row-select {
+    transition: none;
   }
 }

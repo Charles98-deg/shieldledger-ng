@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"SL Figures"', '"Atkinson Hyperlegible Next"', "system-ui", "Segoe UI", "Roboto", "Arial", "sans-serif"],
-        mono: ['"Atkinson Hyperlegible Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
+        sans: ['"SL Naira"', '"SL Figures"', '"Atkinson Hyperlegible Next"', "system-ui", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+        mono: ['"SL Naira"', '"Atkinson Hyperlegible Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
       },
       // Floor for 1080p screen recording: captions 13px, body 15px.
       fontSize: {

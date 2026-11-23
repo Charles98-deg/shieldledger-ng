@@ -1,0 +1,5 @@
+Self-hosted fonts, all under the SIL Open Font License 1.1 (https://openfontlicense.org):
+- Atkinson Hyperlegible Next / Mono: Braille Institute of America (via Google Fonts)
+- Public Sans (digits and separators only, used for plain-zero figures): USWDS (via Google Fonts)
+- naira-regular.woff2 / naira-bold.woff2: one-glyph subsets (U+20A6 NAIRA SIGN) of Noto Sans,
+  The Noto Project Authors. None of the faces above includes the naira sign.

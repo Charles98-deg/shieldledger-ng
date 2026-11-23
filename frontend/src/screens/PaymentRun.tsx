@@ -1,55 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
-import { DecisionTable, DyeLegend } from "../components/DecisionTable";
+import { CaseFile, focusCaseFile } from "../components/CaseFile";
 import { ErrorBox, Loading } from "../components/Drawer";
-import { EvidenceDrawer } from "../components/EvidenceDrawer";
+import { CaseList, SummaryStrip, keyOf } from "../components/RunList";
 import { UploadZone } from "../components/UploadZone";
-import { BUCKETS, bucketAmount, bucketOf, exceptionsFirst, type Bucket } from "../decisionText";
-import { naira } from "../money";
+import { bucketOf, exceptionsFirst, type Bucket } from "../decisionText";
 import type { Decision } from "../types";
 
-const TONE: Record<Bucket, string> = {
-  PAY_NOW: "text-emerald-300",
-  PAY_PART: "text-amber-300",
-  HOLD: "text-orange-300",
-  DO_NOT_PAY: "text-red-300",
-  NEEDS_PERSON: "text-zinc-300",
-};
-
-/** "Which invoices can I pay, and how much?" One button per decision bucket; each filters the table. */
-function SummaryStrip({ invoices, filter, onFilter }: { invoices: Decision[]; filter: Bucket | null; onFilter: (b: Bucket | null) => void }) {
-  return (
-    <div role="group" aria-label="Filter by decision" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-      {BUCKETS.map((b) => {
-        const rows = invoices.filter((d) => bucketOf(d) === b.id);
-        const amt = bucketAmount(rows, b.id);
-        const on = filter === b.id;
-        return (
-          <button
-            key={b.id}
-            aria-pressed={on}
-            disabled={rows.length === 0}
-            onClick={() => onFilter(on ? null : b.id)}
-            className="row-select rounded-lg border border-zinc-800 bg-zinc-900 p-3 text-left hover:border-zinc-600 disabled:cursor-default disabled:opacity-55 aria-pressed:border-adire-800 aria-pressed:bg-adire-100 aria-pressed:shadow-[inset_0_0_0_1px_#1d2d6b]"
-          >
-            <div className="flex items-baseline justify-between gap-2">
-              <span className={`text-base font-bold ${TONE[b.id]}`}>{b.label}</span>
-              <span className="tnum text-2xl font-bold leading-none text-zinc-100">{rows.length}</span>
-            </div>
-            <div className="tnum mt-2 text-lg font-semibold leading-tight text-zinc-100">{naira(amt.value)}</div>
-            <div className="text-xs text-zinc-400">{amt.caption}</div>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+const DESKTOP = "(min-width: 1024px)";
+const isDesktop = () => typeof window !== "undefined" && window.matchMedia(DESKTOP).matches;
 
 export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: number; onChanged: () => void; devMode: boolean }) {
   const [rows, setRows] = useState<Decision[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [open, setOpen] = useState<Decision | null>(null);
   const [filter, setFilter] = useState<Bucket | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  // Below 1024px the case file opens full-screen over the list.
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const load = useCallback(() => {
     setErr(null);
@@ -63,61 +30,98 @@ export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: num
   const invoices = exceptionsFirst(rows?.filter((r) => r.kind === "INVOICE") ?? []);
   const patterns = exceptionsFirst(rows?.filter((r) => r.kind !== "INVOICE") ?? []);
   const shown = filter ? invoices.filter((d) => bucketOf(d) === filter) : invoices;
-  const sel = open ? `${open.kind}-${open.subject_id}` : null;
+  const all = [...invoices, ...patterns];
+  const current = all.find((d) => keyOf(d) === selected) ?? null;
+
+  // Desktop always has a case open: the first case in view.
+  useEffect(() => {
+    if (!isDesktop() || !rows) return;
+    const visible = [...shown, ...(filter ? [] : patterns)];
+    if (!visible.some((d) => keyOf(d) === selected)) setSelected(visible[0] ? keyOf(visible[0]) : null);
+  }, [rows, filter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  const select = (d: Decision) => {
+    setSelected(keyOf(d));
+    if (!isDesktop()) {
+      setMobileOpen(true);
+      requestAnimationFrame(focusCaseFile);
+    }
+  };
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-[-0.02em]">Payment run</h1>
-        <p className="mt-1 max-w-[75ch] text-sm text-zinc-400">
-          Pre-payment check of a vendor invoice batch: 3-way match, duplicates, registry, VAT &amp; WHT. Every number links to its evidence. Recommendation only — nothing is paid.
-        </p>
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">Payment run</h1>
+          <p className="mt-1 max-w-[70ch] text-sm text-zinc-400">
+            Which invoices can be paid, and how much. Exceptions come first; every figure traces to its rule and the document. Recommendation only: nothing is paid from here.
+          </p>
+        </div>
+        <div className="xl:w-[34rem]">
+          <UploadZone
+            devMode={devMode}
+            compact
+            onDone={() => {
+              load();
+              onChanged();
+            }}
+          />
+        </div>
       </div>
-      <UploadZone
-        devMode={devMode}
-        onDone={() => {
-          load();
-          onChanged();
-        }}
-      />
+
       {err && <ErrorBox error={err} onRetry={load} />}
       {!rows && !err && <Loading />}
       {rows && rows.length === 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center text-sm text-zinc-400">
-          No invoices yet. Drop PDFs above{devMode ? " or click “Load demo pack”" : ""}.
+        <div className="rounded-lg border border-dashed border-zinc-600 bg-zinc-900 p-8 text-center text-sm text-zinc-400">
+          No invoices in this run yet. Drop PDFs into the upload box{devMode ? " or load the demo pack" : ""}.
         </div>
       )}
       {rows && rows.length > 0 && (
         <>
           <SummaryStrip invoices={invoices} filter={filter} onFilter={setFilter} />
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-zinc-400">
-            <span>
-              {filter ? (
-                <>
-                  Showing <strong className="text-zinc-100">{shown.length}</strong> of {invoices.length} invoices ·{" "}
+
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:items-start">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm text-zinc-400">
+                <h2 className="text-base font-bold text-zinc-100">
+                  {filter ? `Showing ${shown.length} of ${invoices.length} invoices` : `${invoices.length} invoices, exceptions first`}
+                </h2>
+                {filter ? (
                   <button onClick={() => setFilter(null)} className="font-semibold text-adire-700 underline hover:text-adire-900">
                     Show all
                   </button>
-                </>
-              ) : (
-                <>
-                  <strong className="text-zinc-100">{invoices.length} invoices</strong>, exceptions first. Click a row for the evidence trail.
-                </>
+                ) : (
+                  <span>Select a case to open it.</span>
+                )}
+              </div>
+              <CaseList rows={shown} selected={selected} onSelect={select} label="Invoices" />
+              {patterns.length > 0 && !filter && (
+                <div className="space-y-2 pt-3">
+                  <h2 className="text-base font-bold text-zinc-100">PO &amp; vendor-master patterns</h2>
+                  <p className="text-sm text-zinc-400">Split purchases and vendor/payroll collisions found in master data. Not invoice amounts; excluded from totals.</p>
+                  <CaseList rows={patterns} selected={selected} onSelect={select} label="Master-data patterns" />
+                </div>
               )}
-            </span>
-            <DyeLegend />
-          </div>
-          <DecisionTable rows={shown} onOpen={setOpen} selected={sel} />
-          {patterns.length > 0 && (
-            <div className="space-y-2">
-              <h2 className="pt-4 text-lg font-bold">PO &amp; vendor-master patterns</h2>
-              <p className="text-xs text-zinc-500">Split-PO clusters and vendor/payroll collisions found in master data (not invoice amounts; excluded from totals).</p>
-              <DecisionTable rows={patterns} onOpen={setOpen} selected={sel} />
             </div>
-          )}
+
+            <div
+              className={`${mobileOpen ? "fixed inset-0 z-40 block overflow-y-auto bg-zinc-950 p-3" : "hidden"} lg:sticky lg:top-4 lg:z-auto lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:bg-transparent lg:p-0`}
+              role={mobileOpen ? "dialog" : undefined}
+              aria-modal={mobileOpen || undefined}
+              aria-label="Case file"
+            >
+              <CaseFile d={current} onClose={() => setMobileOpen(false)} />
+            </div>
+          </div>
         </>
       )}
-      <EvidenceDrawer decision={open} onClose={() => setOpen(null)} />
     </div>
   );
 }

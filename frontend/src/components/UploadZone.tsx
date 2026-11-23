@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { api, type UploadResult } from "../api";
 
-export function UploadZone({ onDone, devMode }: { onDone: () => void; devMode: boolean }) {
+export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; devMode: boolean; compact?: boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -56,13 +56,13 @@ export function UploadZone({ onDone, devMode }: { onDone: () => void; devMode: b
           setDrag(false);
           upload(Array.from(e.dataTransfer.files));
         }}
-        className={`flex flex-col items-start gap-3 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between ${
+        className={`flex flex-col items-start gap-3 rounded-lg border border-dashed sm:flex-row sm:items-center sm:justify-between ${compact ? "px-3 py-2.5" : "p-4"} ${
           drag ? "border-adire-600 bg-adire-50" : "border-zinc-600 bg-zinc-900"
         }`}
       >
         <div className="text-sm text-zinc-300">
-          <p className="font-medium">Drop invoices here (PDF, PNG, JPEG · ≤ 10 MB each)</p>
-          <p className="text-xs text-zinc-500">Duplicate files are detected by SHA-256 and replayed, never re-extracted.</p>
+          <p className="font-semibold text-zinc-100">Drop invoices here</p>
+          <p className="text-xs text-zinc-500">PDF, PNG or JPEG, up to 10 MB each. Re-uploads are matched by SHA-256, never re-read.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <input
