@@ -1,0 +1,82 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number.",
+  "grns": [
+    {
+      "id": "GRN-2026-0101-1",
+      "po_id": "PO-2026-0101",
+      "line_no": 1,
+      "delivered_qty": "94",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0102-1",
+      "po_id": "PO-2026-0102",
+      "line_no": 1,
+      "delivered_qty": "100",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0104-1",
+      "po_id": "PO-2026-0104",
+      "line_no": 1,
+      "delivered_qty": "40",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0105-1",
+      "po_id": "PO-2026-0105",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0106-1",
+      "po_id": "PO-2026-0106",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0107-1",
+      "po_id": "PO-2026-0107",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0108-1",
+      "po_id": "PO-2026-0108",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0109-1",
+      "po_id": "PO-2026-0109",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0110-1",
+      "po_id": "PO-2026-0110",
+      "line_no": 1,
+      "delivered_qty": "1",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0111-1",
+      "po_id": "PO-2026-0111",
+      "line_no": 1,
+      "delivered_qty": "9960",
+      "signed": true
+    },
+    {
+      "id": "GRN-2026-0112-1",
+      "po_id": "PO-2026-0112",
+      "line_no": 1,
+      "delivered_qty": "100",
+      "signed": true
+    }
+  ]
+}

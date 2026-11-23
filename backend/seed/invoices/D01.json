@@ -1,0 +1,25 @@
+{
+  "doc": "D01",
+  "scenario": "Short delivery: GRN 94 of 100",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Efik Agro-Inputs Ltd",
+  "vendor_tin": "20456781-0001",
+  "invoice_no": "EAI-2026-0417",
+  "invoice_date": "2026-11-02",
+  "po_ref": "PO-2026-0101",
+  "bank_nuban": "2034567811",
+  "phone": "08031110001",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "NPK 15:15:15 fertiliser, 50kg bag",
+      "qty": "100",
+      "unit_price": "47,500.00",
+      "amount": "4,750,000.00"
+    }
+  ],
+  "subtotal": "4,750,000.00",
+  "vat": "356,250.00",
+  "total": "5,106,250.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

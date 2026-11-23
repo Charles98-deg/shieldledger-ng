@@ -1,0 +1,25 @@
+{
+  "doc": "D07",
+  "scenario": "VAT omitted on standard supply",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Mfamosing Engineering Ltd",
+  "vendor_tin": "20456786-0001",
+  "invoice_no": "MEL-0456",
+  "invoice_date": "2026-11-10",
+  "po_ref": "PO-2026-0107",
+  "bank_nuban": "2034567866",
+  "phone": "08031110006",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Boiler maintenance service",
+      "qty": "1",
+      "unit_price": "1,800,000.00",
+      "amount": "1,800,000.00"
+    }
+  ],
+  "subtotal": "1,800,000.00",
+  "vat": "NOT CHARGED",
+  "total": "1,800,000.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

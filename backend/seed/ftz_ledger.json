@@ -1,0 +1,257 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number. Illustrative trailing-12-month ledger for Qua River Agro-Processing FZE (fictional).",
+  "rows": [
+    {
+      "id": "FTZ-EXP-01",
+      "period": "2025-11",
+      "classification": "EXPORT",
+      "customer": "Gulf of Guinea Foods BV",
+      "invoice_ref": "QRA-EX-2511",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-02",
+      "period": "2025-12",
+      "classification": "EXPORT",
+      "customer": "Atlantic Kernel Traders SA",
+      "invoice_ref": "QRA-EX-2512",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-03",
+      "period": "2026-01",
+      "classification": "EXPORT",
+      "customer": "Sahel Agri Import GmbH",
+      "invoice_ref": "QRA-EX-2513",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-04",
+      "period": "2026-02",
+      "classification": "EXPORT",
+      "customer": "Gulf of Guinea Foods BV",
+      "invoice_ref": "QRA-EX-2514",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-05",
+      "period": "2026-03",
+      "classification": "EXPORT",
+      "customer": "Atlantic Kernel Traders SA",
+      "invoice_ref": "QRA-EX-2515",
+      "amount": "60000000.00",
+      "related_party_outsourced": true
+    },
+    {
+      "id": "FTZ-EXP-06",
+      "period": "2026-04",
+      "classification": "EXPORT",
+      "customer": "Sahel Agri Import GmbH",
+      "invoice_ref": "QRA-EX-2516",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-07",
+      "period": "2026-05",
+      "classification": "EXPORT",
+      "customer": "Gulf of Guinea Foods BV",
+      "invoice_ref": "QRA-EX-2517",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-08",
+      "period": "2026-06",
+      "classification": "EXPORT",
+      "customer": "Atlantic Kernel Traders SA",
+      "invoice_ref": "QRA-EX-2518",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-09",
+      "period": "2026-07",
+      "classification": "EXPORT",
+      "customer": "Sahel Agri Import GmbH",
+      "invoice_ref": "QRA-EX-2519",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-10",
+      "period": "2026-08",
+      "classification": "EXPORT",
+      "customer": "Gulf of Guinea Foods BV",
+      "invoice_ref": "QRA-EX-2520",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-11",
+      "period": "2026-09",
+      "classification": "EXPORT",
+      "customer": "Atlantic Kernel Traders SA",
+      "invoice_ref": "QRA-EX-2521",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-EXP-12",
+      "period": "2026-10",
+      "classification": "EXPORT",
+      "customer": "Sahel Agri Import GmbH",
+      "invoice_ref": "QRA-EX-2522",
+      "amount": "60000000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-IZ-01",
+      "period": "2026-01",
+      "classification": "INTRA_ZONE",
+      "customer": "Calabar FZ Cold Store FZE",
+      "invoice_ref": "QRA-IZ-001",
+      "amount": "11500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-IZ-02",
+      "period": "2026-04",
+      "classification": "INTRA_ZONE",
+      "customer": "Calabar FZ Cold Store FZE",
+      "invoice_ref": "QRA-IZ-002",
+      "amount": "11500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-IZ-03",
+      "period": "2026-07",
+      "classification": "INTRA_ZONE",
+      "customer": "Calabar FZ Cold Store FZE",
+      "invoice_ref": "QRA-IZ-003",
+      "amount": "11500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-IZ-04",
+      "period": "2026-10",
+      "classification": "INTRA_ZONE",
+      "customer": "Calabar FZ Cold Store FZE",
+      "invoice_ref": "QRA-IZ-004",
+      "amount": "11500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-01",
+      "period": "2025-11",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Cross River Mills Ltd",
+      "invoice_ref": "QRA-DT-2511",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-02",
+      "period": "2025-12",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Uyo Feed Distributors",
+      "invoice_ref": "QRA-DT-2512",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-03",
+      "period": "2026-01",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Aba Agro Wholesale",
+      "invoice_ref": "QRA-DT-2513",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-04",
+      "period": "2026-02",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Cross River Mills Ltd",
+      "invoice_ref": "QRA-DT-2514",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-05",
+      "period": "2026-03",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Uyo Feed Distributors",
+      "invoice_ref": "QRA-DT-2515",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-06",
+      "period": "2026-04",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Aba Agro Wholesale",
+      "invoice_ref": "QRA-DT-2516",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-07",
+      "period": "2026-05",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Cross River Mills Ltd",
+      "invoice_ref": "QRA-DT-2517",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-08",
+      "period": "2026-06",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Uyo Feed Distributors",
+      "invoice_ref": "QRA-DT-2518",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-09",
+      "period": "2026-07",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Aba Agro Wholesale",
+      "invoice_ref": "QRA-DT-2519",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-10",
+      "period": "2026-08",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Cross River Mills Ltd",
+      "invoice_ref": "QRA-DT-2520",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-11",
+      "period": "2026-09",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Uyo Feed Distributors",
+      "invoice_ref": "QRA-DT-2521",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    },
+    {
+      "id": "FTZ-DOM-12",
+      "period": "2026-10",
+      "classification": "DOMESTIC_CUSTOMS_TERRITORY",
+      "customer": "Aba Agro Wholesale",
+      "invoice_ref": "QRA-DT-2522",
+      "amount": "19500000.00",
+      "related_party_outsourced": false
+    }
+  ]
+}

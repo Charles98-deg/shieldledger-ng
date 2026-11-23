@@ -1,0 +1,25 @@
+{
+  "doc": "D04",
+  "scenario": "Footing failure: printed total 1,523,000.00 vs 1,333,000.00",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Obudu Logistics Ltd",
+  "vendor_tin": "20456783-0001",
+  "invoice_no": "OBL-0093",
+  "invoice_date": "2026-11-05",
+  "po_ref": "PO-2026-0104",
+  "bank_nuban": "2034567833",
+  "phone": "08031110003",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Haulage trip Calabar-Ikom",
+      "qty": "40",
+      "unit_price": "31,000.00",
+      "amount": "1,240,000.00"
+    }
+  ],
+  "subtotal": "1,240,000.00",
+  "vat": "93,000.00",
+  "total": "1,523,000.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

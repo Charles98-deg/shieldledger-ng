@@ -1,0 +1,192 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number.",
+  "purchase_orders": [
+    {
+      "id": "PO-2026-0101",
+      "vendor_id": "V-EFIK",
+      "po_date": "2026-10-20",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "NPK 15:15:15 fertiliser, 50kg bag",
+          "qty": "100",
+          "unit_price": "47500.00",
+          "uom": "BAG",
+          "category": "AGRO_INPUT",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0102",
+      "vendor_id": "V-IKOM",
+      "po_date": "2026-10-21",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Printed jute sacks, bundle",
+          "qty": "100",
+          "unit_price": "9500.00",
+          "uom": "EA",
+          "category": "PACKAGING",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0104",
+      "vendor_id": "V-OBUDU",
+      "po_date": "2026-10-22",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Haulage trip Calabar-Ikom",
+          "qty": "40",
+          "unit_price": "31000.00",
+          "uom": "TRIP",
+          "category": "LOGISTICS",
+          "wht_category": "GENERAL_SERVICES",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0105",
+      "vendor_id": "V-ATLANTIC",
+      "po_date": "2026-10-01",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Facility cleaning services, Oct 2026",
+          "qty": "1",
+          "unit_price": "650000.00",
+          "uom": "SERVICE",
+          "category": "FACILITY",
+          "wht_category": "GENERAL_SERVICES",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0106",
+      "vendor_id": "V-BAKASSI",
+      "po_date": "2026-10-15",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Jetty pile inspection and repair",
+          "qty": "1",
+          "unit_price": "1650000.00",
+          "uom": "SERVICE",
+          "category": "MARINE",
+          "wht_category": "GENERAL_SERVICES",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0107",
+      "vendor_id": "V-MFAMOSING",
+      "po_date": "2026-10-16",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Boiler maintenance service",
+          "qty": "1",
+          "unit_price": "1800000.00",
+          "uom": "SERVICE",
+          "category": "MAINTENANCE",
+          "wht_category": "GENERAL_SERVICES",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0108",
+      "vendor_id": "V-CROSSEASE",
+      "po_date": "2026-10-01",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Staff canteen catering, Oct 2026",
+          "qty": "1",
+          "unit_price": "420000.00",
+          "uom": "SERVICE",
+          "category": "CATERING",
+          "wht_category": "GENERAL_SERVICES",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0109",
+      "vendor_id": "V-ADIABO",
+      "po_date": "2026-10-05",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Process audit consultancy",
+          "qty": "1",
+          "unit_price": "3000000.00",
+          "uom": "SERVICE",
+          "category": "CONSULTING",
+          "wht_category": "PROFESSIONAL",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0110",
+      "vendor_id": "V-ODUKPANI",
+      "po_date": "2026-10-10",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "500 kVA diesel generator set, installed",
+          "qty": "1",
+          "unit_price": "18500000.00",
+          "uom": "EA",
+          "category": "CAPEX",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0111",
+      "vendor_id": "V-CALFUEL",
+      "po_date": "2026-11-10",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Automotive gas oil (AGO)",
+          "qty": "10000",
+          "unit_price": "1150.00",
+          "uom": "LITRE",
+          "category": "FUEL",
+          "wht_category": "GOODS",
+          "vat_treatment": "EXEMPT"
+        }
+      ]
+    },
+    {
+      "id": "PO-2026-0112",
+      "vendor_id": "V-CALCART",
+      "po_date": "2026-10-25",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Corrugated cartons, 5-ply",
+          "qty": "100",
+          "unit_price": "9500.00",
+          "uom": "EA",
+          "category": "PACKAGING",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    }
+  ]
+}

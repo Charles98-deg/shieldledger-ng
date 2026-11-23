@@ -1,0 +1,25 @@
+{
+  "doc": "D02",
+  "scenario": "Control: price 0.947% over PO (within 1.0%)",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Ikom Packaging Supplies Ltd",
+  "vendor_tin": "20456782-0001",
+  "invoice_no": "IPS-1182",
+  "invoice_date": "2026-11-04",
+  "po_ref": "PO-2026-0102",
+  "bank_nuban": "2034567822",
+  "phone": "08031110002",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Printed jute sacks, bundle",
+      "qty": "100",
+      "unit_price": "9,590.00",
+      "amount": "959,000.00"
+    }
+  ],
+  "subtotal": "959,000.00",
+  "vat": "71,925.00",
+  "total": "1,030,925.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

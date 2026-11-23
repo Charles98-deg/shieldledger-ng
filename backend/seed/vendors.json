@@ -1,0 +1,82 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number.",
+  "vendors": [
+    {
+      "id": "V-EFIK",
+      "name": "Efik Agro-Inputs Ltd",
+      "tin": "20456781-0001",
+      "nuban": "2034567811",
+      "phone": "08031110001"
+    },
+    {
+      "id": "V-IKOM",
+      "name": "Ikom Packaging Supplies Ltd",
+      "tin": "20456782-0001",
+      "nuban": "2034567822",
+      "phone": "08031110002"
+    },
+    {
+      "id": "V-OBUDU",
+      "name": "Obudu Logistics Ltd",
+      "tin": "20456783-0001",
+      "nuban": "2034567833",
+      "phone": "08031110003"
+    },
+    {
+      "id": "V-ATLANTIC",
+      "name": "Atlantic Facility Services",
+      "tin": null,
+      "nuban": "2034567844",
+      "phone": "08031110004"
+    },
+    {
+      "id": "V-BAKASSI",
+      "name": "Bakassi Marine Works",
+      "tin": "31877420-0001",
+      "nuban": "2034567855",
+      "phone": "08031110005"
+    },
+    {
+      "id": "V-MFAMOSING",
+      "name": "Mfamosing Engineering Ltd",
+      "tin": "20456786-0001",
+      "nuban": "2034567866",
+      "phone": "08031110006"
+    },
+    {
+      "id": "V-CROSSEASE",
+      "name": "Cross-Ease Catering",
+      "tin": "20456787-0001",
+      "nuban": "2034567877",
+      "phone": "08031110007"
+    },
+    {
+      "id": "V-ADIABO",
+      "name": "Adiabo & Partners",
+      "tin": "20456788-0001",
+      "nuban": "2034567888",
+      "phone": "08031110008"
+    },
+    {
+      "id": "V-ODUKPANI",
+      "name": "Odukpani Power Systems Ltd",
+      "tin": "20456789-0001",
+      "nuban": "2034567899",
+      "phone": "08031110009"
+    },
+    {
+      "id": "V-CALFUEL",
+      "name": "Calabar Fuel Depot Ltd",
+      "tin": "20456790-0001",
+      "nuban": "2034567900",
+      "phone": "08031110010"
+    },
+    {
+      "id": "V-CALCART",
+      "name": "Calabar Cartons & Labels Ltd",
+      "tin": "20456791-0001",
+      "nuban": "2034567911",
+      "phone": "08031110011"
+    }
+  ]
+}

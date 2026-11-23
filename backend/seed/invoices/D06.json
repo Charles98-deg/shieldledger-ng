@@ -1,0 +1,25 @@
+{
+  "doc": "D06",
+  "scenario": "TIN not in registry",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Bakassi Marine Works",
+  "vendor_tin": "31877420-0001",
+  "invoice_no": "BMW-311",
+  "invoice_date": "2026-11-09",
+  "po_ref": "PO-2026-0106",
+  "bank_nuban": "2034567855",
+  "phone": "08031110005",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Jetty pile inspection and repair",
+      "qty": "1",
+      "unit_price": "1,650,000.00",
+      "amount": "1,650,000.00"
+    }
+  ],
+  "subtotal": "1,650,000.00",
+  "vat": "123,750.00",
+  "total": "1,773,750.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

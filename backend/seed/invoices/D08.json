@@ -1,0 +1,25 @@
+{
+  "doc": "D08",
+  "scenario": "Small, non-VAT-registered vendor charges VAT",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Cross-Ease Catering",
+  "vendor_tin": "20456787-0001",
+  "invoice_no": "CEC-019",
+  "invoice_date": "2026-11-12",
+  "po_ref": "PO-2026-0108",
+  "bank_nuban": "2034567877",
+  "phone": "08031110007",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Staff canteen catering, Oct 2026",
+      "qty": "1",
+      "unit_price": "420,000.00",
+      "amount": "420,000.00"
+    }
+  ],
+  "subtotal": "420,000.00",
+  "vat": "31,500.00",
+  "total": "451,500.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

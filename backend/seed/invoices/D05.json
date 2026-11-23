@@ -1,0 +1,25 @@
+{
+  "doc": "D05",
+  "scenario": "Missing TIN",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Atlantic Facility Services",
+  "vendor_tin": "MISSING",
+  "invoice_no": "AFS-2026-77",
+  "invoice_date": "2026-11-06",
+  "po_ref": "PO-2026-0105",
+  "bank_nuban": "2034567844",
+  "phone": "08031110004",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Facility cleaning services, Oct 2026",
+      "qty": "1",
+      "unit_price": "650,000.00",
+      "amount": "650,000.00"
+    }
+  ],
+  "subtotal": "650,000.00",
+  "vat": "48,750.00",
+  "total": "698,750.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

@@ -1,0 +1,25 @@
+{
+  "doc": "D10",
+  "scenario": "Control: capex generator, clean",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Odukpani Power Systems Ltd",
+  "vendor_tin": "20456789-0001",
+  "invoice_no": "OPS-7781",
+  "invoice_date": "2026-11-16",
+  "po_ref": "PO-2026-0110",
+  "bank_nuban": "2034567899",
+  "phone": "08031110009",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "500 kVA diesel generator set, installed",
+      "qty": "1",
+      "unit_price": "18,500,000.00",
+      "amount": "18,500,000.00"
+    }
+  ],
+  "subtotal": "18,500,000.00",
+  "vat": "1,387,500.00",
+  "total": "19,887,500.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

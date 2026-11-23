@@ -1,0 +1,25 @@
+{
+  "doc": "D11",
+  "scenario": "Control: AGO VAT-exempt, GRN 9,960 L within 0.5% fuel tolerance",
+  "buyer": "Qua River Agro-Processing FZE (fictional), Calabar Free Zone",
+  "vendor": "Calabar Fuel Depot Ltd",
+  "vendor_tin": "20456790-0001",
+  "invoice_no": "CFD-AGO-2210",
+  "invoice_date": "2026-11-17",
+  "po_ref": "PO-2026-0111",
+  "bank_nuban": "2034567900",
+  "phone": "08031110010",
+  "currency": "NGN",
+  "lines": [
+    {
+      "description": "Automotive gas oil (AGO)",
+      "qty": "10,000",
+      "unit_price": "1,150.00",
+      "amount": "11,500,000.00"
+    }
+  ],
+  "subtotal": "11,500,000.00",
+  "vat": "0.00",
+  "total": "11,500,000.00",
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number."
+}

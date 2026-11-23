@@ -1,0 +1,132 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number.",
+  "vendors": [
+    {
+      "id": "V-IKANG",
+      "name": "Ikang Civil Works Ltd",
+      "tin": "20456801-0001",
+      "nuban": "2034568011",
+      "phone": "08031110101",
+      "trap": "S1"
+    },
+    {
+      "id": "V-MKPANI",
+      "name": "Mkpani Hardware Ltd",
+      "tin": "20456802-0001",
+      "nuban": "2034568022",
+      "phone": "08031110102",
+      "trap": "S0"
+    },
+    {
+      "id": "V-ITU",
+      "name": "Itu Quarry Works",
+      "tin": "20456803-0001",
+      "nuban": "2034568033",
+      "phone": "08031110103",
+      "trap": "S0"
+    },
+    {
+      "id": "V-ANWANA",
+      "name": "Anwana Support Services",
+      "tin": "20456804-0001",
+      "nuban": "0987654321",
+      "phone": "08030000001",
+      "trap": "G1"
+    },
+    {
+      "id": "V-AKPABUYO",
+      "name": "Akpabuyo Cleaning Co.",
+      "tin": "20456805-0001",
+      "nuban": "0123456780",
+      "phone": "08030000002",
+      "trap": "G0"
+    }
+  ],
+  "purchase_orders": [
+    {
+      "id": "PO-9001",
+      "vendor_id": "V-IKANG",
+      "po_date": "2026-11-03",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Drainage works, phase A",
+          "qty": "1",
+          "unit_price": "4900000.00",
+          "uom": "LOT",
+          "category": "CIVIL",
+          "wht_category": "CONSTRUCTION",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-9002",
+      "vendor_id": "V-IKANG",
+      "po_date": "2026-11-07",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Drainage works, phase B",
+          "qty": "1",
+          "unit_price": "4850000.00",
+          "uom": "LOT",
+          "category": "CIVIL",
+          "wht_category": "CONSTRUCTION",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-9101",
+      "vendor_id": "V-MKPANI",
+      "po_date": "2026-11-04",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Assorted hardware",
+          "qty": "1",
+          "unit_price": "4900000.00",
+          "uom": "LOT",
+          "category": "HARDWARE",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-9201",
+      "vendor_id": "V-ITU",
+      "po_date": "2026-10-01",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Granite chippings, batch 1",
+          "qty": "1",
+          "unit_price": "4900000.00",
+          "uom": "LOT",
+          "category": "AGGREGATE",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    },
+    {
+      "id": "PO-9202",
+      "vendor_id": "V-ITU",
+      "po_date": "2026-10-13",
+      "lines": [
+        {
+          "line_no": 1,
+          "description": "Granite chippings, batch 2",
+          "qty": "1",
+          "unit_price": "4800000.00",
+          "uom": "LOT",
+          "category": "AGGREGATE",
+          "wht_category": "GOODS",
+          "vat_treatment": "STANDARD"
+        }
+      ]
+    }
+  ]
+}

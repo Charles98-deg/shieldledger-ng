@@ -1,0 +1,59 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number. Seeded stand-in for a taxpayer registry lookup; not NRS data.",
+  "registry": [
+    {
+      "tin": "204567810001",
+      "name": "Efik Agro-Inputs Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567820001",
+      "name": "Ikom Packaging Supplies Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567830001",
+      "name": "Obudu Logistics Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567860001",
+      "name": "Mfamosing Engineering Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567870001",
+      "name": "Cross-Ease Catering",
+      "vat_registered": false,
+      "small_business": true
+    },
+    {
+      "tin": "204567880001",
+      "name": "Adiabo & Partners",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567890001",
+      "name": "Odukpani Power Systems Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567900001",
+      "name": "Calabar Fuel Depot Ltd",
+      "vat_registered": true,
+      "small_business": false
+    },
+    {
+      "tin": "204567910001",
+      "name": "Calabar Cartons & Labels Ltd",
+      "vat_registered": true,
+      "small_business": false
+    }
+  ]
+}

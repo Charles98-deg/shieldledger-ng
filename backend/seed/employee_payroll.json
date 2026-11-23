@@ -1,0 +1,23 @@
+{
+  "_notice": "FICTIONAL DEMO DATA - not a real company, TIN, account or phone number.",
+  "employees": [
+    {
+      "emp_id": "EMP-0007",
+      "name": "Ekaette Udo",
+      "nuban": "3011223344",
+      "phone": "0805 222 0007"
+    },
+    {
+      "emp_id": "EMP-0013",
+      "name": "Bassey Okon",
+      "nuban": "3011223355",
+      "phone": "+234 805 222 0013"
+    },
+    {
+      "emp_id": "EMP-0042",
+      "name": "Edet Effiong",
+      "nuban": "0987 654 321",
+      "phone": "0805 222 0042"
+    }
+  ]
+}
