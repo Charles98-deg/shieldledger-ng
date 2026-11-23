@@ -110,6 +110,15 @@ const HOLD_REASON: Record<string, string> = {
   UNSIGNED_GRN_HOLD: "get the GRN signed",
   POLICY_REQUIRED: "set the policy",
   TIN_FORMAT_WARNING: "check the TIN",
+  UNREGISTERED_VENDOR_BLOCKED: "check the supplier's TIN",
+  FOOTING_FAILURE: "check the totals",
+  VALIDATION_FAILURE: "check the invoice details",
+  LOW_CONFIDENCE_CRITICAL_FIELD: "check the scan",
+  OFFLINE_NO_OCR: "check the scan",
+  SHORT_DELIVERY_HOLD: "check the delivery",
+  PRICE_VARIANCE_HOLD: "check the price",
+  INVALID_VAT_CHARGE_HOLD: "check VAT registration",
+  MISSING_TIN_DOUBLE_WHT: "get the supplier's TIN",
 };
 
 /**
@@ -127,7 +136,10 @@ function statusAction(d: Decision, top: Flag | undefined, releaseAction: string 
     case "HOLD":
       return `Hold: ${(top && HOLD_REASON[top.code]) || "see what happened"}`;
     case "RELEASE_PARTIAL": {
-      const short = d.flags.find((f) => f.code === "SHORT_DELIVERY_HOLD");
+      // A quantity is only the whole story when short delivery is the sole partial hold;
+      // otherwise use the API amount, which covers every held part.
+      const holds = d.flags.filter((f) => f.code.endsWith("_HOLD"));
+      const short = holds.length === 1 && holds[0].code === "SHORT_DELIVERY_HOLD" ? holds[0] : undefined;
       const qty = short && new RegExp(`GRN delivered ${NUM}`).exec(short.detail)?.[1];
       return qty ? `Pay ${qty} only` : `Pay ${naira(d.net_safe_payable)} only`;
     }
