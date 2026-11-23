@@ -176,7 +176,7 @@ Result on 2026-11-23: **151 passed in 39.5 s** (`make evidence`, output in [`rep
 | D02, D09, D10, D11 | controls | price within tol. / clean / clean / AGO exempt within fuel tol. | PASS (no flags) |
 | S0 ×2, G0 | controls | single near-limit PO; 12 days apart; NUBAN with no payroll match | PASS (no flags) |
 
-Frontend: `npm run build` produces **69.38 KB gzip** JS (226.26 KB raw) and **6.70 KB gzip** CSS (31.87 KB raw), against a 200 KB gzip JS budget; output in [`reports/build_size.txt`](reports/build_size.txt). Responsive check on 2026-11-23 in headless Chrome: Payment Run, Exposure Summary and FTZ Monitor at **1440, 1024 and 390 px**, with no horizontal scroll at any width. At 1400 and 1024 px the case file sits beside the list; at 390 px it opens full-screen on selection.
+Frontend: `npm run build` produces **69.61 KB gzip** JS (226.75 KB raw) and **6.70 KB gzip** CSS (31.91 KB raw), against a 200 KB gzip JS budget; output in [`reports/build_size.txt`](reports/build_size.txt). Responsive check on 2026-11-23 in headless Chrome: Payment Run, Exposure Summary and FTZ Monitor at **1440, 1024 and 390 px**, with no horizontal scroll at any width. At 1400 and 1024 px the case file sits beside the list; at 390 px it opens full-screen on selection.
 
 ## 8. Scalability & production path
 

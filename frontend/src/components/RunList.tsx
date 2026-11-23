@@ -1,5 +1,5 @@
 import { useRef, type KeyboardEvent, type ReactNode } from "react";
-import { plainCase } from "../copy/plain";
+import { plainCase, plainSentence, rankedFlags } from "../copy/plain";
 import { BUCKETS, STATUS_LABEL, bucketAmount, bucketOf } from "../decisionText";
 import { naira } from "../money";
 import type { Decision, Summary } from "../types";
@@ -29,19 +29,28 @@ export function Working({ label = "Show working", children, className = "" }: { 
  * decisions from /api/decisions. Nothing is computed beyond counting rows.
  */
 export function Answer({ invoices, totals }: { invoices: Decision[]; totals: Summary["conservation"] }) {
-  const payable = invoices.filter((d) => d.status === "RELEASE" || d.status === "RELEASE_PARTIAL").length;
-  const needYou = invoices.filter((d) => d.status !== "RELEASE").length;
+  // Counts of rows only; the three lines below reconcile: full + part = payable, need you + ready = checked.
+  const full = invoices.filter((d) => d.status === "RELEASE").length;
+  const part = invoices.filter((d) => d.status === "RELEASE_PARTIAL").length;
+  const payable = full + part;
+  const needYou = invoices.length - full;
   return (
     <div>
       <p className="tnum text-3xl font-bold leading-tight tracking-[-0.02em] text-zinc-100 sm:text-4xl">
         Safe to pay today: <span className="whitespace-nowrap">{naira(totals.net_safe_payable)}</span>{" "}
         <span className="whitespace-nowrap text-2xl font-semibold text-zinc-400 sm:text-3xl">
           across {payable} invoice{payable === 1 ? "" : "s"}
+        </span>{" "}
+        <span className="whitespace-nowrap text-xl font-semibold text-zinc-500 sm:text-2xl">
+          ({full} in full, {part} in part)
         </span>
       </p>
       <ul className="tnum mt-3 space-y-1 text-lg text-zinc-300">
         <li>
-          <strong className="text-zinc-100">{needYou}</strong> need{needYou === 1 ? "s" : ""} you
+          <strong className="text-zinc-100">{needYou}</strong> need{needYou === 1 ? "s" : ""} you · <strong className="text-zinc-100">{full}</strong> ready to pay ·{" "}
+          <span className="text-zinc-500">
+            {invoices.length} checked
+          </span>
         </li>
         <li>
           <strong className="text-zinc-100">{naira(totals.blocked_or_hold)}</strong> on hold until fixed
@@ -142,6 +151,7 @@ export function CaseList({ rows, selected, onSelect, label }: { rows: Decision[]
         const on = keyOf(d) === selected;
         const m = atRisk(d);
         const p = plainCase(d);
+        const top = rankedFlags(d)[0];
         const tone = STATUS_TONE[d.status];
         return (
           <li key={keyOf(d)}>
@@ -163,7 +173,9 @@ export function CaseList({ rows, selected, onSelect, label }: { rows: Decision[]
               </span>
               <span className="tnum whitespace-nowrap text-right font-bold text-zinc-100">{m.value ?? ""}</span>
               <span aria-hidden />
-              <span className="max-w-[60ch] text-sm text-zinc-400">{p.sentence}</span>
+              <span className="max-w-[60ch] text-sm text-zinc-400" data-copy={top && !plainSentence(d, top).fromCopy ? "fallback" : "copy"}>
+                {p.sentence}
+              </span>
               <span className="whitespace-nowrap text-right text-xs text-zinc-500">{m.caption}</span>
               <span aria-hidden />
               <span className="pt-1">
