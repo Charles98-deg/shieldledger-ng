@@ -10,13 +10,15 @@
 
 ## Gemini circuit breaker
 
-- Each Gemini call has an 8 s timeout (`GEMINI_TIMEOUT_MS`).
-- One upload request, or one `reset-demo`, is one batch. A `Breaker` is shared across the batch:
+- **Timeout:** each Gemini call times out after `GEMINI_TIMEOUT_S` seconds (default 20). Gemini rejects deadlines under 10 s ("Minimum allowed deadline is 10s"), so smaller values are raised to 10 with a logged warning. A non-integer value is a startup error.
+- **Batches:** one upload request, or one `reset-demo`, is one batch. A `Breaker` is shared across the batch.
+- **How each failure is handled:**
   - No key: Gemini is never called.
-  - A timeout, auth error (for example `API_KEY_INVALID`) or network error stops the model chain at once, because no fallback model can fix it. The breaker opens.
-  - A model-specific failure (schema mismatch, unknown model) tries the next fallback for that document. If the whole chain fails, the breaker opens.
-  - Once the breaker is open, the remaining documents in the batch go straight to the offline parser. Each one records a `skipped` attempt with the reason in `extractions.attempts_json` and the G3 audit event.
-- `/api/health` reports `gemini_state` (`not_configured`, `configured_unused`, `active` or `failing`). `gemini_active_model` is set only after a real successful call. The UI header reads these fields.
+  - **Connectivity** (our timeout, a server-side 504 `DEADLINE_EXCEEDED`, or a network error), **auth** (401/403, `API_KEY_INVALID`) and **quota** (429 `RESOURCE_EXHAUSTED`) failures hit every model alike. The model chain stops at once and the breaker opens.
+  - **Configuration or per-model** failures (400 `INVALID_ARGUMENT`, 404 unknown or retired model, other 5xx, schema mismatch) fall through to the next model in the chain. They do not open the breaker, so the next document tries Gemini again.
+  - Once the breaker is open, the remaining documents in the batch go straight to the offline parser.
+- **Audit trail:** each attempt is recorded in `extractions.attempts_json` and the G3 audit event, with its `kind` (`connectivity`, `auth`, `quota` or `model`). Skipped documents record a `skipped` attempt with the reason.
+- **Health:** `/api/health` reports `gemini_state` (`not_configured`, `configured_unused`, `active` or `failing`). `gemini_active_model` is set only after a real successful call.
 
 ## Data flow
 

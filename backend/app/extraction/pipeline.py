@@ -63,7 +63,7 @@ def run_extraction(
 ) -> tuple[RawInvoice | None, str, list[dict]]:
     """G3: Gemini chain → offline parser. Returns (raw|None, engine, attempts).
 
-    `breaker` is shared across one batch: after the first document whose Gemini call fails,
+    `breaker` is shared across one batch: after the first connectivity, auth or quota failure,
     the remaining documents skip Gemini (recorded as a skipped attempt, never silently).
     """
     gemini = gemini or gemini_client.extract
@@ -80,11 +80,16 @@ def run_extraction(
             return raw, f"gemini:{model}", att
         except gemini_client.GeminiUnavailable as gu:
             attempts.extend(gu.attempts)
-            breaker.trip(gu.attempts[-1]["error"][:200] if gu.attempts else str(gu))
+            breaker.failures += 1
+            if gu.fatal:  # connectivity / auth / quota: no point asking again in this batch
+                breaker.trip(gu.attempts[-1]["error"][:200] if gu.attempts else str(gu))
         except Exception as exc:  # noqa: BLE001
             err = f"{type(exc).__name__}: {exc}"
-            attempts.append({"engine": "gemini", "ok": False, "error": err})
-            breaker.trip(err[:200])
+            kind = gemini_client.classify(exc)
+            attempts.append({"engine": "gemini", "ok": False, "kind": kind, "error": err})
+            breaker.failures += 1
+            if kind in gemini_client.FATAL_KINDS:
+                breaker.trip(err[:200])
     else:
         attempts.append({"engine": "gemini", "ok": False, "error": "GEMINI_API_KEY not set"})
     if mime == "application/pdf":

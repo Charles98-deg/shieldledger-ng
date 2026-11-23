@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.config import GEMINI_TIMEOUT_MS, Settings
+from app.config import Settings
 from app.models.raw import RawInvoice, RawInvoiceLLM
 
 PROMPT = (
@@ -21,41 +21,60 @@ PROMPT = (
 
 
 class GeminiUnavailable(Exception):
-    """fatal=True: a failure no other model can fix (timeout, auth, network), so the chain stopped early."""
+    """fatal=True: the chain stopped early on a failure no other model can fix (connectivity, auth, quota)."""
 
     def __init__(self, attempts: list[dict], fatal: bool = False):
-        super().__init__("all Gemini models failed" if not fatal else "Gemini failed (timeout/auth/network)")
+        super().__init__("all Gemini models failed" if not fatal else "Gemini unavailable (connectivity/auth/quota)")
         self.attempts = attempts
         self.fatal = fatal
 
 
-_FATAL_MARKERS = ("timeout", "timed out", "deadline", "api_key_invalid", "api key not valid",
-                  "permission_denied", "unauthenticated", "connecterror", "connection")
+# Failure kinds. Only the first three are "fatal": they hit every model alike, so the chain stops
+# and the per-batch breaker opens. A 504 DEADLINE_EXCEEDED counts as connectivity (it is a timeout). "model" covers configuration and per-model errors (400
+# INVALID_ARGUMENT such as a too-short deadline, 404 unknown model, 5xx, schema mismatch): the next
+# model in the chain is tried and the breaker stays closed.
+FATAL_KINDS = ("connectivity", "auth", "quota")
+_NET_CLASSES = {"TimeoutException", "ReadTimeout", "ConnectTimeout", "WriteTimeout", "PoolTimeout", "Timeout",
+                "NetworkError", "ConnectError", "ReadError", "WriteError", "RemoteProtocolError", "ConnectionError"}
+
+
+def classify(exc: BaseException) -> str:
+    code = getattr(exc, "code", None)
+    status = str(getattr(exc, "status", "") or "").upper()
+    text = f"{type(exc).__name__}: {exc}".lower()
+    if isinstance(code, int):
+        if code in (401, 403) or "api_key_invalid" in text or "api key not valid" in text:
+            return "auth"
+        if code == 429 or status == "RESOURCE_EXHAUSTED":
+            return "quota"
+        if code == 504 or status == "DEADLINE_EXCEEDED":
+            return "connectivity"  # the server-side twin of our own call timeout
+        return "model"
+    if isinstance(exc, (TimeoutError, ConnectionError)):
+        return "connectivity"
+    # The SDK raises transport errors from httpx, its vendored httpx2, or requests, so match the
+    # class hierarchy by name rather than by one library's types.
+    if any(c.__name__ in _NET_CLASSES for c in type(exc).__mro__):
+        return "connectivity"
+    if "api_key_invalid" in text or "api key not valid" in text or "unauthenticated" in text or "permission_denied" in text:
+        return "auth"
+    if "resource_exhausted" in text or "quota" in text:
+        return "quota"
+    return "model"
 
 
 def is_fatal(exc: BaseException) -> bool:
-    """Timeouts, auth and network errors hit every model in the chain alike: stop instead of retrying."""
-    if isinstance(exc, (TimeoutError, ConnectionError)):
-        return True
-    try:
-        import httpx
-        if isinstance(exc, (httpx.TimeoutException, httpx.NetworkError)):
-            return True
-    except ImportError:  # pragma: no cover - httpx ships with google-genai
-        pass
-    if getattr(exc, "code", None) in (401, 403):
-        return True
-    text = f"{type(exc).__name__}: {exc}".lower()
-    return any(m in text for m in _FATAL_MARKERS)
+    return classify(exc) in FATAL_KINDS
 
 
 @dataclass
 class Breaker:
-    """Per-batch circuit breaker. Opens on the first failed Gemini document; later documents skip Gemini."""
+    """Per-batch circuit breaker. Opens on the first connectivity, auth or quota failure; later documents skip Gemini."""
 
     is_open: bool = False
     reason: str | None = None
     calls: int = 0          # documents sent to Gemini in this batch
+    failures: int = 0       # documents where every model failed (fatal or not)
     ok_model: str | None = None
 
     def trip(self, reason: str) -> None:
@@ -73,7 +92,7 @@ class GeminiStatus:
     def record(self, breaker: Breaker) -> None:
         if breaker.ok_model and not breaker.is_open:
             self.state, self.active_model = "active", breaker.ok_model
-        elif breaker.is_open:
+        elif breaker.is_open or breaker.failures:
             self.state, self.active_model = "failing", None
 
 
@@ -94,7 +113,7 @@ def extract(data: bytes, mime: str, settings: Settings) -> tuple[RawInvoice, str
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=GEMINI_TIMEOUT_MS))
+    client = genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=settings.gemini_timeout_s * 1000))
     for model in model_chain(settings):
         try:
             resp = client.models.generate_content(
@@ -107,7 +126,9 @@ def extract(data: bytes, mime: str, settings: Settings) -> tuple[RawInvoice, str
             attempts.append({"engine": f"gemini:{model}", "ok": True})
             return parsed.to_raw(), model, attempts
         except Exception as exc:  # noqa: BLE001 - every failure is recorded, never swallowed
-            attempts.append({"engine": f"gemini:{model}", "ok": False, "error": f"{type(exc).__name__}: {str(exc)[:300]}"})
-            if is_fatal(exc):
+            kind = classify(exc)
+            attempts.append({"engine": f"gemini:{model}", "ok": False, "kind": kind,
+                             "error": f"{type(exc).__name__}: {str(exc)[:300]}"})
+            if kind in FATAL_KINDS:
                 raise GeminiUnavailable(attempts, fatal=True) from exc
     raise GeminiUnavailable(attempts)

@@ -26,7 +26,7 @@ make dev        # API on :8000, UI on :5173
 # open http://localhost:5173  → click “Load demo pack”
 ```
 
-Other targets: `make test` runs the full suite, `make reset-demo` resets and re-ingests the pack (under 10 s), and `make build` builds the production UI. `make pack` regenerates the demo PDFs, `make register` regenerates `docs/STATUTORY_REGISTER.md`, `make calc` runs the independent golden calculator, and `make smoke-gemini` runs the Gemini check.
+Other targets: `make test` runs the full suite, `make reset-demo` resets and re-ingests the pack (about 1–2 s warm, under 10 s on a cold start), and `make build` builds the production UI. `make pack` regenerates the demo PDFs, `make register` regenerates `docs/STATUTORY_REGISTER.md`, `make calc` runs the independent golden calculator, and `make smoke-gemini` runs the Gemini check.
 
 Optional: copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable Gemini transcription (needed for PNG/JPEG invoices).
 
@@ -57,12 +57,28 @@ flowchart LR
 - **Evidence:** each `Decision` carries ordered `EvidenceStep`s (rule id/version, cite, status label, inputs, computation string, result, raw document snippet). Every decision ends with a conservation step: `net + WHT + held == gross`, exact Decimal equality.
 - See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for data flow, money handling and the scaling path.
 
+### Screens
+
+Payment Run: a summary strip that filters a case list (exceptions first), with the selected invoice's case file showing the decision stamp, the settlement tape, why, and the evidence.
+
+![Payment Run with invoice D01 open: summary strip, case list and case file with settlement tape](docs/screenshots/payment-run.png)
+
+Exposure Summary: direct cash and contingent fines shown separately and never added, the conservation bar, and the audit-chain check.
+
+![Exposure Summary: direct cash, contingent fines, conservation bar and audit chain](docs/screenshots/exposure-summary.png)
+
+FTZ Monitor: the domestic-sales share against the 25% line, headroom, and a what-if scenario with both interpretations.
+
+![FTZ Monitor: domestic share gauge at 23.40% CRITICAL, headroom and scenario input](docs/screenshots/ftz-monitor.png)
+
+Screenshots taken at 1440×900 on fictional demo data.
+
 ## 5. Sprint-Built Features (22–24 Nov 2026)
 
 Everything in this repository was built during the sprint.
 
 - **Foundation:** Decimal money helpers that never use floats (`money.py`), plus an AST test that fails the build on any float in `backend/app/`. Also built: the statutory register YAML with typed loader and buyer policies, the Pydantic v2 raw/verified/domain models with invariants INV-1..3, and the SQLite schema with append-only audit triggers and the hash-chained audit log.
-- **Extraction (`extraction/`):** gates G1–G7, Gemini client with an env-driven model fallback chain (8 s per-call timeout, per-batch circuit breaker), offline regex parser for the demo layout, per-document engine badge.
+- **Extraction (`extraction/`):** gates G1–G7, Gemini client with an env-driven model fallback chain (20 s per-call timeout via `GEMINI_TIMEOUT_S`, minimum 10 s; per-batch circuit breaker), offline regex parser for the demo layout, per-document engine badge.
 - **Engines (`engine/`):**
   - WHT on the approved base, with double rate when the payee has no TIN and policy-required categories.
   - VAT: input-VAT offset entitlement, an advisory when VAT is omitted on a standard-rated supply, and a hold on the VAT portion when a small, non-VAT-registered vendor charges VAT.
@@ -71,7 +87,7 @@ Everything in this repository was built during the sprint.
   - FTZ monitor: share, bands, headroom, scenario and two interpretations.
   - `decide.py` orchestration.
 - **API:** documents, evaluate, decisions + evidence, summary, policies (audited), rules, FTZ summary/scenario, audit list/verify, CSV export, dev reset, health.
-- **Frontend:** the Payment Run, Exposure Summary and FTZ Monitor screens. Also an evidence drawer, a policy slide-over, the Statutory Register drawer, and an SVG gauge and bars with no chart library. Money is formatted with BigInt kobo, and the layout works down to 375 px.
+- **Frontend:** the Payment Run, Exposure Summary and FTZ Monitor screens. Payment Run is master-detail: a summary strip that filters a case list (exceptions first), with a case file holding the decision stamp, settlement tape, why and evidence. Also a policy slide-over, the Statutory Register drawer, and an SVG gauge and bars with no chart library. Money is formatted with BigInt kobo, and the layout works down to 375 px.
 - **Data & tooling:** fictional seed pack (12 invoices, PO/GRN, registry, payroll, PO/vendor traps, FTZ ledger), deterministic PDF generator, independent golden calculator, register generator, Gemini smoke script, trap report.
 
 **Pre-Existing:** none. No code existed before 22 Nov 2026. `docs/planning/` is reserved for pre-sprint notes only (no code).
@@ -163,7 +179,15 @@ Frontend: `npm run build` produces **59.98 KB gzip** JS and 4.51 KB gzip CSS (bu
 
 - The offline parser only handles the demo-pack `Label: value` layout. Other PDFs go to human review (a validation or low-confidence flag), not to a guess.
 - Images (PNG/JPEG) need Gemini. Without it they go to `NEEDS_HUMAN_REVIEW` with `OFFLINE_NO_OCR`.
-- **Gemini 3.x structured-output status:** untested against a live model. `scripts/smoke_gemini.py` was first run on 2026-11-23 with **no `GEMINI_API_KEY` present** and reported `SKIPPED`. A key added later the same day was rejected by Google (`400 API_KEY_INVALID`), so no Gemini call has succeeded yet. The Gemini path (`gemini-3.8-flash` → `gemini-3.6-flash` → `gemini-2.5-flash-lite`) is covered only by mocked tests: chain order, schema-failure fallback, per-model failure recording, and the per-batch circuit breaker (a mocked timeout gives one Gemini attempt per batch). The demo runs entirely on `offline_regex`. Run `make smoke-gemini` with a key before relying on it.
+- **Gemini structured-output status (live smoke runs, 2026-11-23):**
+  - **First run:** no key was present, and the script reported `SKIPPED`.
+  - **Second key:** rejected (`400 API_KEY_INVALID`).
+  - **Current key, default chain:** no model succeeded.
+    - `gemini-3.8-flash` returned `503 UNAVAILABLE` (high demand) or timed out.
+    - `gemini-3.6-flash` returned `504 DEADLINE_EXCEEDED`.
+    - `gemini-2.5-flash-lite` returned `404` ("no longer available to new users").
+  - **One success:** a diagnostic run with `GEMINI_MODEL=gemini-3.5-flash-lite` and `GEMINI_TIMEOUT_S=60` succeeded in about 24 s, and its structured JSON validated against `RawInvoiceLLM`. The chain defaults are unchanged.
+  - **Recording:** the demo runs on `offline_regex`. With a key set, the first PDF of a batch can wait up to the 20 s timeout before the breaker sends the rest offline.
 - The taxpayer registry is a seeded fictional table, not a live NRS lookup.
 - All thresholds (price/quantity tolerances, duplicate fuzz and window, split-PO band, PO approval limit) are buyer-configurable policies, not law.
 - The FTZ interpretation panel uses a user-entered illustrative profit and shows two readings; it does not decide which applies.
