@@ -20,31 +20,31 @@ export function InterpretationPanel({ base, scenario }: { base: FtzPosition; sce
     },
   ];
   return (
-    <section className="rounded-lg border border-amber-400/30 bg-zinc-900 p-4" aria-label="Interpretation">
+    <section className="panel p-6" aria-label="Interpretation">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">If the 25% line is crossed: two readings</h2>
-        <div className="flex gap-1">
+        <h2 className="panel-head">If the 25% line is crossed: two readings</h2>
+        <div className="flex items-center gap-2">
           <StatusLabel status="CONFLICTING" />
-          <span className="text-xs text-zinc-500">FTZ_DOMESTIC_THRESHOLD</span>
+          <span className="code">FTZ_DOMESTIC_THRESHOLD</span>
         </div>
       </div>
-      <p className="mt-1 text-xs text-amber-200/90">Interpretation not settled in sources — see Statutory Register.</p>
-      <p className="mt-1 text-xs text-zinc-400">
+      <p className="mt-1 text-sm text-amber-300">Interpretation not settled in sources: both readings are shown, neither is chosen. See Statutory Register.</p>
+      <p className="mt-1 text-sm text-zinc-500">
         Assumption (illustrative, user-editable in Policies): annual profit <span className="tnum font-medium text-zinc-200">{naira(base.illustrative_profit)}</span>. CIT rate 30%{" "}
         <StatusLabel status="SECONDARY_VERIFIED" />.
       </p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {rows.map((r) => (
-          <div key={r.k} className="rounded border border-zinc-800 p-3">
-            <div className="text-xs text-zinc-400">
-              <span className="mr-1 rounded bg-zinc-800 px-1.5 font-mono font-bold text-zinc-200">{r.k}</span>
+          <div key={r.k} className="rounded bg-zinc-950 p-5">
+            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
+              <span className="grid h-6 w-6 place-items-center rounded-sm bg-adire-800 text-xs font-bold text-white">{r.k}</span>
               {r.title}
             </div>
-            <div className="mt-0.5 font-mono text-xs text-zinc-500">{r.formula}</div>
-            <div className="tnum mt-2 text-2xl font-bold">{naira(r.base)}</div>
+            <div className="mt-1 text-xs text-zinc-500">{r.formula}</div>
+            <div className="tnum mt-3 text-2xl font-bold text-zinc-100">{naira(r.base)}</div>
             <div className="text-xs text-zinc-500">at current share {base.share_pct}</div>
             {r.scn && (
-              <div className="tnum mt-1 text-sm text-orange-200">
+              <div className="tnum mt-2 border-t border-zinc-800 pt-2 text-base font-semibold text-orange-300">
                 {naira(r.scn)} <span className="text-xs text-zinc-500">at scenario share {scenario?.share_pct_4dp}</span>
               </div>
             )}
@@ -52,7 +52,7 @@ export function InterpretationPanel({ base, scenario }: { base: FtzPosition; sce
         ))}
       </div>
       {base.min_etr_info && (
-        <p className="tnum mt-3 text-xs text-zinc-400">
+        <p className="tnum mt-4 text-sm text-zinc-500">
           Info (MIN_ETR_15 toggle ON): profit × 15% = {naira(base.min_etr_info)} <StatusLabel status="SECONDARY_VERIFIED" /> — information only.
         </p>
       )}

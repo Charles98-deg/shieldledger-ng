@@ -1,11 +1,12 @@
 import type { RuleStatus } from "../types";
 
+// Honesty labels. Verified = quiet green; conflicting = amber; unverified = red; brief-only = slate.
 const STYLE: Record<RuleStatus, string> = {
-  SECONDARY_VERIFIED: "border-emerald-500/50 bg-[#e3f1e8] text-emerald-300",
-  CONFLICTING: "border-amber-400/70 bg-[#f8edd3] text-amber-300",
-  BRIEF_ONLY: "border-zinc-600 bg-zinc-800 text-zinc-200",
-  UNVERIFIED: "border-red-400/70 bg-[#f9e3e3] text-red-300",
-  BUYER_POLICY: "border-adire-300 bg-adire-50 text-adire-800",
+  SECONDARY_VERIFIED: "bg-emerald-50 text-emerald-300",
+  CONFLICTING: "bg-amber-50 text-amber-300",
+  BRIEF_ONLY: "bg-zinc-800 text-zinc-300",
+  UNVERIFIED: "bg-red-50 text-red-300",
+  BUYER_POLICY: "bg-adire-100 text-adire-800",
 };
 
 export const STATUS_HELP: Record<RuleStatus, string> = {
@@ -21,7 +22,7 @@ export function StatusLabel({ status }: { status: RuleStatus | string }) {
   return (
     <span
       title={STATUS_HELP[s]}
-      className={`inline-block whitespace-nowrap rounded-sm border px-1.5 py-px font-mono text-xs font-semibold uppercase tracking-wide ${STYLE[s] ?? "border-zinc-600 text-zinc-300"}`}
+      className={`inline-block whitespace-nowrap rounded-sm px-1.5 py-px align-[1px] font-mono text-2xs font-semibold uppercase ${STYLE[s] ?? "bg-zinc-800 text-zinc-300"}`}
     >
       {status}
     </span>

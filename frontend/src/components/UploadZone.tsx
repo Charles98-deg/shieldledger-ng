@@ -56,15 +56,20 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
           setDrag(false);
           upload(Array.from(e.dataTransfer.files));
         }}
-        className={`flex flex-col items-start gap-3 rounded-lg border border-dashed sm:flex-row sm:items-center sm:justify-between ${compact ? "px-3 py-2.5" : "p-4"} ${
-          drag ? "border-adire-600 bg-adire-50" : "border-zinc-600 bg-zinc-900"
+        className={`flex flex-col items-start gap-3 rounded-lg border border-dashed transition-colors duration-150 sm:flex-row sm:items-center sm:justify-between ${compact ? "px-4 py-3" : "p-5"} ${
+          drag ? "border-action-600 bg-action-50" : "border-zinc-700 bg-zinc-900"
         }`}
       >
-        <div className="text-sm text-zinc-300">
+        <div className="flex items-start gap-3 text-sm text-zinc-300">
+          <svg aria-hidden width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-zinc-500">
+            <path d="M10 13V3.5M6.5 7 10 3.5 13.5 7M3.5 12.5v3a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3" />
+          </svg>
+          <div>
           <p className="font-semibold text-zinc-100">Drop invoices here</p>
           <p className="text-xs text-zinc-500">PDF, PNG or JPEG, up to 10 MB each. Re-uploads are matched by SHA-256, never re-read.</p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2">
           <input
             ref={input}
             type="file"
@@ -79,7 +84,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
           <button
             disabled={!!busy}
             onClick={() => input.current?.click()}
-            className="rounded border border-zinc-600 bg-zinc-900 px-4 py-2 text-sm font-semibold hover:bg-zinc-950 disabled:opacity-50"
+            className="btn btn-secondary"
           >
             Choose files
           </button>
@@ -87,7 +92,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
             <button
               disabled={!!busy}
               onClick={loadPack}
-              className="rounded bg-adire-800 px-4 py-2 text-sm font-semibold text-white hover:bg-adire-700 active:bg-adire-900 disabled:opacity-50"
+              className="btn btn-primary"
             >
               Load demo pack
             </button>
@@ -105,7 +110,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
         </p>
       )}
       {results.some((r) => r.error) && (
-        <ul className="text-xs text-red-300">
+        <ul className="text-sm text-red-300">
           {results
             .filter((r) => r.error)
             .map((r) => (

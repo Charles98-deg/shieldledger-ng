@@ -65,11 +65,12 @@
 
 :root {
   color-scheme: light;
-  --ink: #121a38;
-  --ground: #f3f3ef;
-  --adire: #1d2d6b;
-  --adire-mid: #7d8cc4;
-  --rule: #dcdfe7;
+  --ink: #0f1a33;
+  --ground: #f3f5f8;
+  --navy: #172b55;
+  --action: #2459c4;
+  --wht: #7b8db5;
+  --rule: #e4e8ef;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -80,6 +81,7 @@ body {
 }
 body {
   font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "tnum" 1;
 }
@@ -88,15 +90,15 @@ table {
   font-variant-numeric: tabular-nums;
 }
 ::selection {
-  background: #c8d0ea;
+  background: #c2d3f3;
   color: var(--ink);
 }
 :focus-visible {
-  outline: 2px solid var(--adire);
+  outline: 2px solid var(--action);
   outline-offset: 2px;
 }
 * {
-  scrollbar-color: #c3c7d4 transparent;
+  scrollbar-color: #c3cad6 transparent;
 }
 a {
   text-underline-offset: 3px;
@@ -104,24 +106,50 @@ a {
 input,
 select,
 textarea {
-  caret-color: var(--adire);
+  caret-color: var(--action);
+}
+
+/* Shared primitives: one panel, one button family, one badge shape. */
+@layer components {
+  .panel {
+    @apply rounded-lg border border-zinc-800 bg-zinc-900;
+  }
+  .panel-head {
+    @apply text-base font-bold text-zinc-100;
+  }
+  .label {
+    @apply text-xs font-semibold text-zinc-500;
+  }
+  .btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded px-4 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-action-600 text-white hover:bg-action-700 active:bg-action-800;
+  }
+  .btn-secondary {
+    @apply border border-zinc-700 bg-zinc-900 text-zinc-100 hover:border-zinc-600 hover:bg-zinc-950;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm px-2 py-0.5 text-xs font-semibold;
+  }
+  .code {
+    @apply font-mono text-xs text-zinc-500;
+  }
 }
 
 /* Dye strip: an invoice's money drawn on one batch-wide scale.
    Dyed = net safe payable, half-dyed = WHT to remit, undyed resist = held/blocked. */
 .dye-net {
-  background: var(--adire);
+  background: var(--navy);
 }
 .dye-wht {
-  background: var(--adire-mid);
+  background: var(--wht);
 }
 .dye-held {
-  background: #fff;
-  box-shadow: inset 0 0 0 1.5px var(--adire);
+  background: #d9915f;
 }
 .dye-held-review {
-  background: #fff;
-  box-shadow: inset 0 0 0 1.5px #767c97;
+  background: #e4e8ef;
 }
 
 /* Motion is feedback only: row selection and drawer open/close. */
@@ -150,21 +178,9 @@ textarea {
   }
 }
 
-/* Settlement tape: adding-machine figures. Digits come from the plain-zero figure face, set tabular;
-   labels and the ₦ sign from Atkinson Mono. */
+/* Settlement tape: plain-zero figures, tabular, right-aligned. */
 .tape {
-  font-family: "SL Naira", "SL Figures", "Atkinson Hyperlegible Mono", ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 15px;
-}
-@media (max-width: 639px) {
-  .tape {
-    font-family: "SL Naira", "SL Figures", "Atkinson Hyperlegible Next", system-ui, sans-serif;
-  }
-}
-.stamp {
-  border-radius: 3px;
-  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px currentColor;
 }
 
 /* Case-file change: a short settle-in so the swap reads as "new case", not a flicker. */

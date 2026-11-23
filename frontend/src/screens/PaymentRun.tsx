@@ -2,16 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
 import { CaseFile, focusCaseFile } from "../components/CaseFile";
 import { ErrorBox, Loading } from "../components/Drawer";
-import { CaseList, SummaryStrip, keyOf } from "../components/RunList";
+import { BatchPanel, CaseList, keyOf } from "../components/RunList";
 import { UploadZone } from "../components/UploadZone";
 import { bucketOf, exceptionsFirst, type Bucket } from "../decisionText";
-import type { Decision } from "../types";
+import type { Decision, Summary } from "../types";
 
 const DESKTOP = "(min-width: 1024px)";
 const isDesktop = () => typeof window !== "undefined" && window.matchMedia(DESKTOP).matches;
 
 export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: number; onChanged: () => void; devMode: boolean }) {
   const [rows, setRows] = useState<Decision[] | null>(null);
+  const [totals, setTotals] = useState<Summary["conservation"] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [filter, setFilter] = useState<Bucket | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -24,6 +25,10 @@ export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: num
       .decisions()
       .then(setRows)
       .catch((e) => setErr((e as Error).message));
+    api
+      .summary()
+      .then((s) => setTotals(s.invoice_count > 0 ? s.conservation : null))
+      .catch(() => setTotals(null));
   }, []);
   useEffect(load, [load, refreshKey]);
 
@@ -56,15 +61,15 @@ export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: num
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-[-0.02em]">Payment run</h1>
-          <p className="mt-1 max-w-[70ch] text-sm text-zinc-400">
+          <h1 className="text-2xl font-bold tracking-[-0.02em] text-zinc-100">Payment run</h1>
+          <p className="mt-1 max-w-[68ch] text-sm text-zinc-400">
             Which invoices can be paid, and how much. Exceptions come first; every figure traces to its rule and the document. Recommendation only: nothing is paid from here.
           </p>
         </div>
-        <div className="xl:w-[34rem]">
+        <div className="xl:w-[46rem] xl:shrink-0">
           <UploadZone
             devMode={devMode}
             compact
@@ -79,22 +84,22 @@ export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: num
       {err && <ErrorBox error={err} onRetry={load} />}
       {!rows && !err && <Loading />}
       {rows && rows.length === 0 && (
-        <div className="rounded-lg border border-dashed border-zinc-600 bg-zinc-900 p-8 text-center text-sm text-zinc-400">
+        <div className="panel px-6 py-12 text-center text-sm text-zinc-400">
           No invoices in this run yet. Drop PDFs into the upload box{devMode ? " or load the demo pack" : ""}.
         </div>
       )}
       {rows && rows.length > 0 && (
         <>
-          <SummaryStrip invoices={invoices} filter={filter} onFilter={setFilter} />
+          <BatchPanel invoices={invoices} totals={totals} filter={filter} onFilter={setFilter} />
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:items-start">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:items-start">
             <div className="space-y-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm text-zinc-400">
-                <h2 className="text-base font-bold text-zinc-100">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 px-1 text-sm text-zinc-500">
+                <h2 className="panel-head">
                   {filter ? `Showing ${shown.length} of ${invoices.length} invoices` : `${invoices.length} invoices, exceptions first`}
                 </h2>
                 {filter ? (
-                  <button onClick={() => setFilter(null)} className="font-semibold text-adire-700 underline hover:text-adire-900">
+                  <button onClick={() => setFilter(null)} className="font-semibold text-action-600 underline hover:text-action-800">
                     Show all
                   </button>
                 ) : (
@@ -103,16 +108,18 @@ export function PaymentRun({ refreshKey, onChanged, devMode }: { refreshKey: num
               </div>
               <CaseList rows={shown} selected={selected} onSelect={select} label="Invoices" />
               {patterns.length > 0 && !filter && (
-                <div className="space-y-2 pt-3">
-                  <h2 className="text-base font-bold text-zinc-100">PO &amp; vendor-master patterns</h2>
-                  <p className="text-sm text-zinc-400">Split purchases and vendor/payroll collisions found in master data. Not invoice amounts; excluded from totals.</p>
+                <div className="space-y-3 pt-5">
+                  <div className="px-1">
+                    <h2 className="panel-head">PO &amp; vendor-master patterns</h2>
+                    <p className="mt-0.5 text-sm text-zinc-500">Split purchases and vendor/payroll collisions found in master data. Not invoice amounts; excluded from totals.</p>
+                  </div>
                   <CaseList rows={patterns} selected={selected} onSelect={select} label="Master-data patterns" />
                 </div>
               )}
             </div>
 
             <div
-              className={`${mobileOpen ? "fixed inset-0 z-40 block overflow-y-auto bg-zinc-950 p-3" : "hidden"} lg:sticky lg:top-4 lg:z-auto lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:bg-transparent lg:p-0`}
+              className={`${mobileOpen ? "fixed inset-0 z-40 block overflow-y-auto bg-zinc-950 p-3" : "hidden"} lg:sticky lg:top-4 lg:z-auto lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:rounded-lg lg:bg-transparent lg:p-0`}
               role={mobileOpen ? "dialog" : undefined}
               aria-modal={mobileOpen || undefined}
               aria-label="Case file"

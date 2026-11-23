@@ -50,7 +50,6 @@ export function Drawer({
         data-state={state}
         className={`drawer-panel relative flex h-full w-full ${width} flex-col bg-zinc-950 shadow-[-12px_0_32px_-8px_rgba(17,26,63,0.28)] outline-none`}
       >
-        <div aria-hidden className="h-1.5 shrink-0 bg-adire-800" />
         <header className="flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900 px-5 py-4">
           <div className="min-w-0 flex-1">{title}</div>
           <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100" aria-label="Close panel">

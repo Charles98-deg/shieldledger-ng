@@ -3,6 +3,7 @@ import { api } from "../api";
 import { naira, parseInput } from "../money";
 import type { FtzPosition } from "../types";
 import { ErrorBox } from "./Drawer";
+import { BAND_TONE } from "./FtzScale";
 
 export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) => void }) {
   const [val, setVal] = useState("25,000,000.00");
@@ -30,23 +31,26 @@ export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) 
   }
 
   return (
-    <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4" aria-label="Scenario">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">What if we sell more into the customs territory?</h2>
+    <section className="panel p-6" aria-label="Scenario">
+      <h2 className="panel-head">Scenario: what if we sell more into the customs territory?</h2>
+      <p className="mt-1 text-sm text-zinc-500">Adds the amount to both domestic and total sales and recomputes the share, band and headroom.</p>
       <form
-        className="mt-3 flex flex-col gap-2 sm:flex-row"
+        className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end"
         onSubmit={(e) => {
           e.preventDefault();
           run();
         }}
       >
-        <label htmlFor="scn" className="sr-only">
-          Additional domestic sales in naira
-        </label>
-        <div className="flex flex-1 items-center rounded border border-zinc-700 bg-zinc-950 px-2">
-          <span className="text-zinc-500">₦</span>
-          <input id="scn" value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent px-1 py-1.5 outline-none" />
+        <div className="flex-1 sm:max-w-md">
+          <label htmlFor="scn" className="label">
+            Additional domestic sales
+          </label>
+          <div className="mt-1 flex h-10 items-center rounded border border-zinc-700 bg-zinc-900 px-3 focus-within:border-action-600 focus-within:ring-2 focus-within:ring-action-100">
+            <span className="text-zinc-500">₦</span>
+            <input id="scn" value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent px-1.5 text-base outline-none" />
+          </div>
         </div>
-        <button disabled={busy} className="rounded bg-adire-800 px-4 py-2 text-sm font-semibold text-white hover:bg-adire-700 active:bg-adire-900 disabled:opacity-50">
+        <button disabled={busy} className="btn btn-primary">
           {busy ? "Computing…" : "Run scenario"}
         </button>
         {res && (
@@ -56,7 +60,7 @@ export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) 
               setRes(null);
               onResult(null);
             }}
-            className="rounded border border-zinc-700 px-3 py-1.5 text-sm"
+            className="btn btn-secondary"
           >
             Clear
           </button>
@@ -68,22 +72,24 @@ export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) 
         </div>
       )}
       {res && (
-        <dl className="tnum mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+        <dl className="tnum mt-5 grid grid-cols-2 gap-x-6 gap-y-4 rounded bg-zinc-950 px-5 py-4 text-sm sm:grid-cols-4">
           <div>
-            <dt className="text-xs text-zinc-500">New domestic share</dt>
-            <dd className="font-semibold">{res.share_pct_4dp}</dd>
+            <dt className="label">New domestic share</dt>
+            <dd className="mt-0.5 text-xl font-bold text-zinc-100">{res.share_pct_4dp}</dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Band</dt>
-            <dd className={`font-bold ${res.band === "BREACHED" ? "text-red-400" : "text-orange-300"}`}>{res.band}</dd>
+            <dt className="label">Band</dt>
+            <dd className="mt-1">
+              <span className={`badge font-bold uppercase ${(BAND_TONE[res.band] ?? BAND_TONE.CRITICAL).badge}`}>{res.band}</span>
+            </dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Remaining headroom</dt>
-            <dd className="font-semibold">{naira(res.headroom)}</dd>
+            <dt className="label">Remaining headroom</dt>
+            <dd className="mt-0.5 text-xl font-bold text-zinc-100">{naira(res.headroom)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Domestic / total</dt>
-            <dd className="text-xs">
+            <dt className="label">Domestic / total</dt>
+            <dd className="mt-0.5 text-base font-semibold text-zinc-100">
               {naira(res.domestic, { compact: true })} / {naira(res.total, { compact: true })}
             </dd>
           </div>

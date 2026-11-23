@@ -144,7 +144,7 @@ Open items (full list in [`docs/STATUTORY_REGISTER.md`](docs/STATUTORY_REGISTER.
 make test        # cd backend && pytest
 ```
 
-Result on 2026-11-23: **151 passed in 49.5 s** (`make evidence`, output in [`reports/test_summary.txt`](reports/test_summary.txt)). No API key set; every pack document was extracted by `offline_regex`.
+Result on 2026-11-23: **151 passed in 38.3 s** (`make evidence`, output in [`reports/test_summary.txt`](reports/test_summary.txt)). No API key set; every pack document was extracted by `offline_regex`.
 
 - Golden/unit T01–T20 are mapped to files in `backend/tests/` (`test_money_wht_vat.py`, `test_footing_gates.py`, `test_three_way.py`, `test_duplicates.py`, `test_split_po.py`, `test_ghost_vendor.py`, `test_registry_guard.py`, `test_ftz.py`, `test_audit_idempotency.py`, `test_offline_parser.py`, `test_no_float.py`, `test_e2e_pack.py`).
 - Hypothesis properties H1–H6 are in `test_properties.py`: conservation, bounds, duplicate symmetry and invariance, FTZ headroom optimality, Decimal round-trip through DB and API, and quantize idempotence.
@@ -176,7 +176,7 @@ Result on 2026-11-23: **151 passed in 49.5 s** (`make evidence`, output in [`rep
 | D02, D09, D10, D11 | controls | price within tol. / clean / clean / AGO exempt within fuel tol. | PASS (no flags) |
 | S0 ×2, G0 | controls | single near-limit PO; 12 days apart; NUBAN with no payroll match | PASS (no flags) |
 
-Frontend: `npm run build` produces **66.05 KB gzip** JS (211.03 KB raw) and **6.26 KB gzip** CSS (28.14 KB raw), against a 200 KB gzip JS budget; output in [`reports/build_size.txt`](reports/build_size.txt). Responsive check on 2026-11-23 against the production build in headless Chrome: Payment Run, Exposure Summary and FTZ Monitor at **1400, 1024 and 390 px**, with no horizontal scroll at any width. At 1400 and 1024 px the case file sits beside the list; at 390 px it opens full-screen on selection.
+Frontend: `npm run build` produces **66.94 KB gzip** JS (214.93 KB raw) and **6.78 KB gzip** CSS (31.91 KB raw), against a 200 KB gzip JS budget; output in [`reports/build_size.txt`](reports/build_size.txt). Responsive check on 2026-11-23 in headless Chrome: Payment Run, Exposure Summary and FTZ Monitor at **1440, 1024 and 390 px**, with no horizontal scroll at any width. At 1400 and 1024 px the case file sits beside the list; at 390 px it opens full-screen on selection.
 
 ## 8. Scalability & production path
 

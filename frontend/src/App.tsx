@@ -38,10 +38,10 @@ function geminiLabel(h: Health): string {
 function Mark() {
   return (
     <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden className="shrink-0">
-      <rect width="34" height="34" rx="4" fill="#f3f3ef" />
-      <rect x="5" y="5" width="24" height="9" fill="#1d2d6b" />
-      <rect x="5" y="17" width="15" height="12" fill="#1d2d6b" />
-      <rect x="22.75" y="17.75" width="5.5" height="10.5" fill="none" stroke="#1d2d6b" strokeWidth="1.5" />
+      <rect width="34" height="34" rx="7" fill="#ffffff" />
+      <rect x="6" y="6" width="22" height="8" rx="1" fill="#172b55" />
+      <rect x="6" y="17" width="13" height="11" rx="1" fill="#172b55" />
+      <rect x="21.75" y="17.75" width="5.5" height="9.5" rx="1" fill="none" stroke="#2459c4" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -72,11 +72,11 @@ export default function App() {
     <div className="min-h-screen">
       <header className="bg-adire-900 text-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex items-center gap-3 pb-1 lg:pb-3">
+          <div className="flex items-center gap-3 pb-1 lg:pb-3.5">
             <Mark />
             <div>
               <div className="text-lg font-bold leading-tight tracking-[-0.01em]">ShieldLedger NG</div>
-              <div className="text-xs text-adire-200 lg:hidden xl:block">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
+              <div className="text-xs text-adire-300 lg:hidden xl:block">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
             </div>
           </div>
           <nav className="-mx-1 flex flex-wrap items-end gap-x-1 gap-y-2 lg:flex-nowrap" aria-label="Screens">
@@ -85,18 +85,18 @@ export default function App() {
                 key={t.id}
                 href={`#/${t.id}`}
                 aria-current={tab === t.id ? "page" : undefined}
-                className={`whitespace-nowrap rounded-t px-3.5 py-2.5 text-sm font-semibold ${
-                  tab === t.id ? "bg-zinc-950 text-adire-900" : "text-adire-100 hover:bg-adire-800 hover:text-white"
+                className={`whitespace-nowrap rounded-t-lg px-4 py-3 text-sm font-semibold transition-colors duration-150 ${
+                  tab === t.id ? "bg-zinc-950 text-zinc-100" : "text-adire-200 hover:bg-adire-800 hover:text-white"
                 }`}
               >
                 {t.label}
               </a>
             ))}
-            <span className="mx-2 hidden h-6 w-px self-center bg-adire-700 lg:inline-block" />
-            <button onClick={() => setRegisterOpen(true)} className="mb-1.5 whitespace-nowrap rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+            <span className="mx-2 hidden h-5 w-px self-center bg-adire-700 lg:inline-block" />
+            <button onClick={() => setRegisterOpen(true)} className="mb-2 h-9 whitespace-nowrap rounded px-3 text-sm font-semibold text-adire-100 ring-1 ring-inset ring-adire-600 transition-colors duration-150 hover:bg-adire-800 hover:text-white">
               Statutory Register
             </button>
-            <button onClick={() => setPoliciesOpen(true)} className="mb-1.5 whitespace-nowrap rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+            <button onClick={() => setPoliciesOpen(true)} className="mb-2 h-9 whitespace-nowrap rounded px-3 text-sm font-semibold text-adire-100 ring-1 ring-inset ring-adire-600 transition-colors duration-150 hover:bg-adire-800 hover:text-white">
               Policies
             </button>
           </nav>
@@ -104,18 +104,21 @@ export default function App() {
       </header>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-      {healthErr && <div className="mt-3 rounded border border-red-400 bg-red-500/10 p-2 text-sm text-red-300">Backend unreachable. Start it with <code>make dev</code>.</div>}
+      {healthErr && <div className="mt-4 rounded border border-red-400/40 bg-red-50 px-3 py-2 text-sm text-red-300">Backend unreachable. Start it with <code>make dev</code>.</div>}
       {health && (
-        <div className="flex flex-wrap gap-x-5 gap-y-1 border-b border-zinc-800 py-2.5 text-xs text-zinc-400">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 py-3 text-xs text-zinc-500">
           <span>
-            Rules pack <span className="font-mono font-semibold text-zinc-200">{health.rules_pack}</span>
+            Rules pack <span className="font-mono font-semibold text-zinc-300">{health.rules_pack}</span>
           </span>
-          <span>{geminiLabel(health)}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className={`h-2 w-2 rounded-full ${health.extraction.gemini_state === "active" ? "bg-emerald-500" : health.extraction.gemini_state === "failing" ? "bg-orange-400" : "bg-zinc-600"}`} />
+            {geminiLabel(health)}
+          </span>
           <span>LLM transcribes · Python decides</span>
         </div>
       )}
 
-      <main className="py-5">
+      <main className="pb-6 pt-2">
         {tab === "run" && <PaymentRun refreshKey={refreshKey} onChanged={bump} devMode={health?.app_env === "dev"} />}
         {tab === "summary" && <ExposureSummary refreshKey={refreshKey} />}
         {tab === "ftz" && <FtzMonitor refreshKey={refreshKey} onChanged={bump} />}

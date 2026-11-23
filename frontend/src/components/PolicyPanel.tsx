@@ -86,7 +86,7 @@ export function PolicyPanel({ open, onClose, onChanged }: { open: boolean; onClo
       {items && (
         <div className="space-y-3">
           {items.some((p) => p.policy_required) && (
-            <div className="rounded border border-amber-400 bg-[#f8edd3] p-2.5 text-sm text-amber-300">
+            <div className="rounded bg-amber-50 px-3 py-2.5 text-sm text-amber-300">
               Needs a value: {items.filter((p) => p.policy_required).map((p) => textFor(p).label).join(", ")}. Invoices that depend on it go to a person.{" "}
               <span className="font-mono text-xs">(POLICY_REQUIRED: {items.filter((p) => p.policy_required).map((p) => p.key).join(", ")})</span>
             </div>
@@ -101,7 +101,7 @@ export function PolicyPanel({ open, onClose, onChanged }: { open: boolean; onClo
                   const t = textFor(p);
                   const id = `pol-${p.key}`;
                   return (
-                    <div key={p.key} className={`rounded border bg-zinc-900 p-3 ${p.policy_required ? "border-amber-400" : "border-zinc-800"}`}>
+                    <div key={p.key} className={`rounded-lg border bg-zinc-900 p-4 ${p.policy_required ? "border-amber-400" : "border-zinc-800"}`}>
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <label htmlFor={id} className="text-base font-semibold text-zinc-100">
                           {t.label}
@@ -120,7 +120,7 @@ export function PolicyPanel({ open, onClose, onChanged }: { open: boolean; onClo
                             aria-checked={draft[p.key] === "ON"}
                             onClick={() => setDraft({ ...draft, [p.key]: draft[p.key] === "ON" ? "OFF" : "ON" })}
                             className={`inline-flex items-center gap-2 rounded px-3 py-1.5 text-sm font-semibold ring-1 ring-inset ${
-                              draft[p.key] === "ON" ? "bg-adire-800 text-white ring-adire-800" : "bg-zinc-900 text-zinc-300 ring-zinc-600"
+                              draft[p.key] === "ON" ? "bg-action-600 text-white ring-action-600" : "bg-zinc-900 text-zinc-300 ring-zinc-600"
                             }`}
                           >
                             <span aria-hidden className={`h-2.5 w-2.5 rounded-full ${draft[p.key] === "ON" ? "bg-white" : "bg-zinc-600"}`} />
@@ -140,7 +140,7 @@ export function PolicyPanel({ open, onClose, onChanged }: { open: boolean; onClo
                             ))}
                           </select>
                         ) : (
-                          <div className={`flex items-center rounded border bg-zinc-900 focus-within:outline focus-within:outline-2 focus-within:outline-adire-800 ${p.policy_required ? "border-amber-400" : "border-zinc-600"}`}>
+                          <div className={`flex items-center rounded border bg-zinc-900 focus-within:outline focus-within:outline-2 focus-within:outline-action-600 ${p.policy_required ? "border-amber-400" : "border-zinc-600"}`}>
                             {t.unit === "naira" && <span className="pl-2 text-zinc-400">₦</span>}
                             <input
                               id={id}
@@ -175,7 +175,7 @@ export function PolicyPanel({ open, onClose, onChanged }: { open: boolean; onClo
             <button
               disabled={!dirty || saving}
               onClick={save}
-              className="rounded bg-adire-800 px-4 py-2 text-sm font-semibold text-white hover:bg-adire-700 active:bg-adire-900 disabled:opacity-40"
+              className="btn btn-primary"
             >
               {saving ? "Saving…" : `Save & re-evaluate${dirty ? ` (${Object.keys(changes).length})` : ""}`}
             </button>
