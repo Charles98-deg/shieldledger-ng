@@ -1,111 +1,131 @@
-import { useRef, type KeyboardEvent } from "react";
-import { BUCKETS, bucketAmount, bucketOf, reasonLine, type Bucket } from "../decisionText";
+import { useRef, type KeyboardEvent, type ReactNode } from "react";
+import { plainCase } from "../copy/plain";
+import { BUCKETS, STATUS_LABEL, bucketAmount, bucketOf } from "../decisionText";
 import { naira } from "../money";
 import type { Decision, Summary } from "../types";
 import { CheckMark, StatusIcon } from "./Icons";
-import { STATUS_TONE, StatusChip } from "./StatusChip";
+import { STATUS_TONE } from "./StatusChip";
 
 export const keyOf = (d: Decision) => `${d.kind}-${d.subject_id}`;
 
-/**
- * Batch header: the one answer first (net safe to pay), settled against gross, then the five decision
- * buckets as a segmented filter. Totals come from /api/summary, kobo-exact strings.
- */
-export function BatchPanel({
-  invoices,
-  totals,
-  filter,
-  onFilter,
-}: {
-  invoices: Decision[];
-  totals: Summary["conservation"] | null;
-  filter: Bucket | null;
-  onFilter: (b: Bucket | null) => void;
-}) {
+/** A collapsed "Show working" block. Native <details>: keyboard and screen-reader support for free. */
+export function Working({ label = "Show working", children, className = "" }: { label?: string; children: ReactNode; className?: string }) {
   return (
-    <section aria-label="Batch totals" className="panel overflow-hidden">
-      {totals && (
-        <div className="flex flex-col gap-4 px-5 py-4 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
-          <div>
-            <p className="label">Net safe to pay</p>
-            <p className="tnum mt-1 text-4xl font-bold tracking-[-0.02em] text-zinc-100">{naira(totals.net_safe_payable)}</p>
-            <p className="mt-1 text-xs text-zinc-500">
-              {invoices.length} invoices in this run · recommendation only, nothing is paid from here
-            </p>
-          </div>
-          <dl className="tape grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 xl:text-right">
-            <div>
-              <dt className="label">Gross invoiced</dt>
-              <dd className="mt-0.5 text-base font-semibold text-zinc-100">{naira(totals.gross)}</dd>
-            </div>
-            <div>
-              <dt className="label">
-                <span aria-hidden>− </span>WHT to remit
-              </dt>
-              <dd className="mt-0.5 text-base font-semibold text-zinc-100">{naira(totals.wht_to_remit)}</dd>
-            </div>
-            <div>
-              <dt className="label">
-                <span aria-hidden>− </span>Held or blocked
-              </dt>
-              <dd className="mt-0.5 text-base font-semibold text-zinc-100">{naira(totals.blocked_or_hold)}</dd>
-            </div>
-            <div>
-              <dt className="label">Check</dt>
-              <dd className={`mt-0.5 inline-flex items-center gap-1.5 text-base font-semibold ${totals.ok ? "text-emerald-300" : "text-red-300"}`} role="status">
-                <CheckMark ok={totals.ok} />
-                {totals.ok ? "Balances" : "Off"}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      )}
-      <div role="group" aria-label="Filter the batch by decision" className="grid grid-cols-2 border-t border-zinc-800 bg-zinc-950/60 sm:grid-cols-3 lg:grid-cols-5">
-        {BUCKETS.map((b, i) => {
-          const rows = invoices.filter((d) => bucketOf(d) === b.id);
-          const amt = bucketAmount(rows, b.id);
-          const on = filter === b.id;
-          return (
-            <button
-              key={b.id}
-              aria-pressed={on}
-              disabled={rows.length === 0}
-              onClick={() => onFilter(on ? null : b.id)}
-              className={`row-select relative border-zinc-800 px-5 py-3.5 text-left hover:bg-zinc-900 disabled:cursor-default disabled:opacity-50 aria-pressed:bg-adire-800 aria-pressed:hover:bg-adire-800 ${i > 0 ? "lg:border-l" : ""} max-lg:shadow-[inset_-1px_-1px_0_#e4e8ef]`}
-            >
-              <span className={`flex items-center gap-1.5 text-sm font-bold ${on ? "text-white" : STATUS_TONE[b.status].text}`}>
-                <StatusIcon status={b.status} />
-                {b.label}
-                <span className={`tnum ml-auto text-xl font-bold leading-none ${on ? "text-white" : "text-zinc-100"}`}>{rows.length}</span>
-              </span>
-              <span className={`tnum mt-1.5 block text-base font-semibold ${on ? "text-white" : "text-zinc-100"}`}>{naira(amt.value)}</span>
-              <span className={`block text-xs ${on ? "text-adire-200" : "text-zinc-500"}`}>{amt.caption}</span>
-            </button>
-          );
-        })}
-      </div>
-    </section>
+    <details className={`group ${className}`}>
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded text-sm font-semibold text-action-600 hover:text-action-800 [&::-webkit-details-marker]:hidden">
+        <svg aria-hidden width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-150 group-open:rotate-90">
+          <path d="M6 3.5 10.5 8 6 12.5" />
+        </svg>
+        <span className="group-open:hidden">{label}</span>
+        <span className="hidden group-open:inline">Hide working</span>
+      </summary>
+      <div className="mt-3">{children}</div>
+    </details>
   );
 }
 
-/** Right-hand money for a queue row: the figure that matters for this decision, and what it means. */
-function rowMoney(d: Decision): { value: string | null; caption: string; struck?: boolean } {
-  if (d.kind !== "INVOICE") return { value: null, caption: "check before paying this vendor" };
+/**
+ * Step 2, the answer. Every figure is an API value: the batch totals from /api/summary, counts of
+ * decisions from /api/decisions. Nothing is computed beyond counting rows.
+ */
+export function Answer({ invoices, totals }: { invoices: Decision[]; totals: Summary["conservation"] }) {
+  const payable = invoices.filter((d) => d.status === "RELEASE" || d.status === "RELEASE_PARTIAL").length;
+  const needYou = invoices.filter((d) => d.status !== "RELEASE").length;
+  return (
+    <div>
+      <p className="tnum text-3xl font-bold leading-tight tracking-[-0.02em] text-zinc-100 sm:text-4xl">
+        Safe to pay today: <span className="whitespace-nowrap">{naira(totals.net_safe_payable)}</span>{" "}
+        <span className="whitespace-nowrap text-2xl font-semibold text-zinc-400 sm:text-3xl">
+          across {payable} invoice{payable === 1 ? "" : "s"}
+        </span>
+      </p>
+      <ul className="tnum mt-3 space-y-1 text-lg text-zinc-300">
+        <li>
+          <strong className="text-zinc-100">{needYou}</strong> need{needYou === 1 ? "s" : ""} you
+        </li>
+        <li>
+          <strong className="text-zinc-100">{naira(totals.blocked_or_hold)}</strong> on hold until fixed
+        </li>
+      </ul>
+
+      <ul aria-label="Invoices by decision" className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-zinc-800 pt-4">
+        {BUCKETS.map((b) => {
+          const n = invoices.filter((d) => bucketOf(d) === b.id).length;
+          return (
+            <li key={b.id} className={`inline-flex items-center gap-2 text-sm font-semibold ${n ? STATUS_TONE[b.status].text : "text-zinc-500"}`}>
+              <StatusIcon status={b.status} />
+              <span className="text-zinc-200">{b.label}</span>
+              <span className="tnum text-base font-bold text-zinc-100">{n}</span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <Working className="mt-4">
+        <div className="space-y-4 rounded bg-zinc-950 px-4 py-4">
+          <dl className="tape grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-5">
+            <div>
+              <dt className="label">Gross invoiced</dt>
+              <dd className="mt-0.5 font-semibold text-zinc-100">{naira(totals.gross)}</dd>
+            </div>
+            <div>
+              <dt className="label">− WHT to remit</dt>
+              <dd className="mt-0.5 font-semibold text-zinc-100">{naira(totals.wht_to_remit)}</dd>
+            </div>
+            <div>
+              <dt className="label">− Held or blocked</dt>
+              <dd className="mt-0.5 font-semibold text-zinc-100">{naira(totals.blocked_or_hold)}</dd>
+            </div>
+            <div>
+              <dt className="label">= Net safe payable</dt>
+              <dd className="mt-0.5 font-semibold text-zinc-100">{naira(totals.net_safe_payable)}</dd>
+            </div>
+            <div>
+              <dt className="label">Conservation</dt>
+              <dd className={`mt-0.5 inline-flex items-center gap-1.5 font-semibold ${totals.ok ? "text-emerald-300" : "text-red-300"}`}>
+                <CheckMark ok={totals.ok} />
+                {totals.ok ? "Balances to the kobo" : "Does not balance"}
+              </dd>
+            </div>
+          </dl>
+          <dl className="tnum grid grid-cols-2 gap-x-6 gap-y-3 border-t border-zinc-800 pt-3 text-sm sm:grid-cols-5">
+            {BUCKETS.map((b) => {
+              const rows = invoices.filter((d) => bucketOf(d) === b.id);
+              const amt = bucketAmount(rows, b.id);
+              return (
+                <div key={b.id}>
+                  <dt className="label">{b.label}</dt>
+                  <dd className="mt-0.5 font-semibold text-zinc-100">{naira(amt.value)}</dd>
+                  <dd className="text-xs text-zinc-500">{amt.caption}</dd>
+                </div>
+              );
+            })}
+          </dl>
+          <p className="text-xs text-zinc-500">Invoices needing a person are excluded from every total until reviewed. Recommendation only: nothing is paid from here.</p>
+        </div>
+      </Working>
+    </div>
+  );
+}
+
+/** The amount at risk on a row, read straight from the decision. */
+function atRisk(d: Decision): { value: string | null; caption: string } {
+  if (d.kind !== "INVOICE") return { value: d.gross !== "0.00" ? naira(d.gross) : null, caption: d.kind === "PO_PATTERN" ? "PO value, not in totals" : "vendor master, not in totals" };
   switch (d.status) {
     case "RELEASE":
       return { value: naira(d.net_safe_payable), caption: "to pay" };
     case "RELEASE_PARTIAL":
-      return { value: naira(d.net_safe_payable), caption: `to pay · hold ${naira(d.blocked_or_hold)}` };
+      return { value: naira(d.blocked_or_hold), caption: `on hold · pay ${naira(d.net_safe_payable)}` };
     case "HOLD":
-      return { value: naira(d.blocked_or_hold), caption: "held" };
+      return { value: naira(d.blocked_or_hold), caption: "on hold" };
     case "BLOCKED":
       return { value: naira(d.blocked_or_hold), caption: "blocked" };
     case "NEEDS_HUMAN_REVIEW":
-      return { value: naira(d.gross), caption: "check the invoice first", struck: true };
+      return { value: naira(d.gross), caption: "not counted until checked" };
   }
 }
 
-/** The batch as a queue of cases, exceptions first. Arrow keys move the selection. */
+/** Step 3 rows: vendor, amount at risk, one plain sentence, one action. Arrow keys move the selection. */
 export function CaseList({ rows, selected, onSelect, label }: { rows: Decision[]; selected: string | null; onSelect: (d: Decision) => void; label: string }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const onKey = (e: KeyboardEvent, i: number) => {
@@ -120,7 +140,9 @@ export function CaseList({ rows, selected, onSelect, label }: { rows: Decision[]
     <ul aria-label={label} className="panel divide-y divide-zinc-800 overflow-hidden">
       {rows.map((d, i) => {
         const on = keyOf(d) === selected;
-        const m = rowMoney(d);
+        const m = atRisk(d);
+        const p = plainCase(d);
+        const tone = STATUS_TONE[d.status];
         return (
           <li key={keyOf(d)}>
             <button
@@ -129,18 +151,24 @@ export function CaseList({ rows, selected, onSelect, label }: { rows: Decision[]
               tabIndex={on || (selIndex < 0 && i === 0) ? 0 : -1}
               onClick={() => onSelect(d)}
               onKeyDown={(e) => onKey(e, i)}
-              className="row-select group grid w-full grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1.5 px-5 py-4 text-left hover:bg-zinc-950 focus-visible:outline-offset-[-2px] aria-[current=true]:bg-action-50"
+              className="row-select grid w-full grid-cols-[1.25rem_minmax(0,1fr)_auto] gap-x-3 gap-y-1 px-5 py-4 text-left hover:bg-zinc-950 focus-visible:outline-offset-[-2px] aria-[current=true]:bg-action-50"
             >
-              <span className="flex min-w-0 items-baseline gap-2.5">
-                <span className="w-[3.25rem] shrink-0 font-mono text-xs font-semibold text-zinc-500 group-aria-[current=true]:text-action-700">{d.doc_label}</span>
-                <span className="min-w-0 font-semibold text-zinc-100 [overflow-wrap:anywhere]">{d.vendor_name}</span>
+              <span className={`pt-1 ${tone.text}`} title={STATUS_LABEL[d.status]}>
+                <StatusIcon status={d.status} />
+                <span className="sr-only">{STATUS_LABEL[d.status]}: </span>
               </span>
-              <span className={`tnum whitespace-nowrap text-right font-bold ${m.struck ? "text-zinc-500 line-through decoration-zinc-500" : "text-zinc-100"}`}>{m.value ?? ""}</span>
-              <span className="flex min-w-0 items-center sm:pl-[3.875rem]">
-                <StatusChip status={d.status} />
+              <span className="min-w-0">
+                <span className="font-semibold text-zinc-100 [overflow-wrap:anywhere]">{d.vendor_name}</span>
+                <span className="ml-2 font-mono text-xs text-zinc-500">{d.doc_label}</span>
               </span>
-              <span className="self-center whitespace-nowrap text-right text-xs text-zinc-500">{m.caption}</span>
-              <span className="col-span-2 max-w-[62ch] text-sm text-zinc-400 sm:pl-[3.875rem]">{reasonLine(d)}</span>
+              <span className="tnum whitespace-nowrap text-right font-bold text-zinc-100">{m.value ?? ""}</span>
+              <span aria-hidden />
+              <span className="max-w-[60ch] text-sm text-zinc-400">{p.sentence}</span>
+              <span className="whitespace-nowrap text-right text-xs text-zinc-500">{m.caption}</span>
+              <span aria-hidden />
+              <span className="pt-1">
+                <span className={`badge ${tone.badge}`}>{p.action}</span>
+              </span>
             </button>
           </li>
         );

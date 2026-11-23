@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { api, type UploadResult } from "../api";
 
-export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; devMode: boolean; compact?: boolean }) {
+export function UploadZone({ onDone, devMode, compact }: { onDone: (meta: { seconds: string }) => void; devMode: boolean; compact?: boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -10,6 +10,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
 
   async function upload(files: File[]) {
     if (!files.length) return;
+    const t0 = performance.now();
     setBusy(`Uploading ${files.length} file(s)…`);
     setMsg(null);
     try {
@@ -20,7 +21,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
       const errs = r.results.filter((x) => x.error).length;
       const replays = r.results.filter((x) => x.idempotent_replay).length;
       setMsg({ tone: errs ? "err" : "ok", text: `${r.results.length - errs} accepted${replays ? ` (${replays} idempotent replay)` : ""}${errs ? `, ${errs} rejected` : ""}.` });
-      onDone();
+      onDone({ seconds: ((performance.now() - t0) / 1000).toFixed(1) });
     } catch (e) {
       setMsg({ tone: "err", text: (e as Error).message });
     } finally {
@@ -35,7 +36,7 @@ export function UploadZone({ onDone, devMode, compact }: { onDone: () => void; d
     try {
       const r = await api.resetDemo();
       setMsg({ tone: "ok", text: `Demo pack loaded: ${r.ingested} PDFs in ${r.seconds}s via ${r.engines.join(", ")}.` });
-      onDone();
+      onDone({ seconds: r.seconds });
     } catch (e) {
       setMsg({ tone: "err", text: (e as Error).message });
     } finally {

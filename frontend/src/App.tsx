@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "./api";
+import { AuditDrawer } from "./components/AuditDrawer";
 import { Footer } from "./components/Footer";
 import { PolicyPanel } from "./components/PolicyPanel";
 import { RegisterDrawer } from "./components/RegisterDrawer";
@@ -51,6 +52,7 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [policiesOpen, setPoliciesOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
   const [health, setHealth] = useState<Health | null>(null);
   const [healthErr, setHealthErr] = useState(false);
 
@@ -76,29 +78,51 @@ export default function App() {
             <Mark />
             <div>
               <div className="text-lg font-bold leading-tight tracking-[-0.01em]">ShieldLedger NG</div>
-              <div className="text-xs text-adire-300 lg:hidden xl:block">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
+              <div className="text-xs text-adire-300 lg:hidden">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
             </div>
           </div>
-          <nav className="-mx-1 flex flex-wrap items-end gap-x-1 gap-y-2 lg:flex-nowrap" aria-label="Screens">
-            {TABS.map((t) => (
-              <a
-                key={t.id}
-                href={`#/${t.id}`}
-                aria-current={tab === t.id ? "page" : undefined}
-                className={`whitespace-nowrap rounded-t-lg px-4 py-3 text-sm font-semibold transition-colors duration-150 ${
-                  tab === t.id ? "bg-zinc-950 text-zinc-100" : "text-adire-200 hover:bg-adire-800 hover:text-white"
-                }`}
-              >
-                {t.label}
-              </a>
-            ))}
-            <span className="mx-2 hidden h-5 w-px self-center bg-adire-700 lg:inline-block" />
-            <button onClick={() => setRegisterOpen(true)} className="mb-2 h-9 whitespace-nowrap rounded px-3 text-sm font-semibold text-adire-100 ring-1 ring-inset ring-adire-600 transition-colors duration-150 hover:bg-adire-800 hover:text-white">
-              Statutory Register
-            </button>
-            <button onClick={() => setPoliciesOpen(true)} className="mb-2 h-9 whitespace-nowrap rounded px-3 text-sm font-semibold text-adire-100 ring-1 ring-inset ring-adire-600 transition-colors duration-150 hover:bg-adire-800 hover:text-white">
-              Policies
-            </button>
+          <nav className="flex flex-wrap items-end gap-x-1 gap-y-2 lg:flex-nowrap" aria-label="Screens">
+            <a
+              href="#/run"
+              aria-current={tab === "run" ? "page" : undefined}
+              className={`whitespace-nowrap rounded-t-lg px-4 py-3 text-sm font-semibold transition-colors duration-150 ${
+                tab === "run" ? "bg-zinc-950 text-zinc-100" : "text-adire-100 hover:bg-adire-800 hover:text-white"
+              }`}
+            >
+              Payment Run
+            </a>
+            <div role="group" aria-labelledby="fin-group" className="flex flex-wrap items-end gap-x-0.5 lg:ml-4 lg:flex-nowrap lg:border-l lg:border-adire-700 lg:pl-4">
+              <span id="fin-group" className="mb-3 mr-2 whitespace-nowrap text-xs font-semibold text-adire-300">
+                For finance &amp; tax
+              </span>
+              {TABS.filter((t) => t.id !== "run").map((t) => (
+                <a
+                  key={t.id}
+                  href={`#/${t.id}`}
+                  aria-current={tab === t.id ? "page" : undefined}
+                  className={`whitespace-nowrap rounded-t-lg px-3 py-2.5 text-xs font-semibold transition-colors duration-150 ${
+                    tab === t.id ? "bg-zinc-950 text-zinc-100" : "text-adire-200 hover:bg-adire-800 hover:text-white"
+                  }`}
+                >
+                  {t.label}
+                </a>
+              ))}
+              {(
+                [
+                  ["Statutory Register", () => setRegisterOpen(true)],
+                  ["Policies", () => setPoliciesOpen(true)],
+                  ["Audit", () => setAuditOpen(true)],
+                ] as const
+              ).map(([label, open]) => (
+                <button
+                  key={label}
+                  onClick={open}
+                  className="mb-1 whitespace-nowrap rounded px-3 py-1.5 text-xs font-semibold text-adire-200 transition-colors duration-150 hover:bg-adire-800 hover:text-white"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </nav>
         </div>
       </header>
@@ -128,6 +152,7 @@ export default function App() {
       </div>
       <PolicyPanel open={policiesOpen} onClose={() => setPoliciesOpen(false)} onChanged={bump} />
       <RegisterDrawer open={registerOpen} onClose={() => setRegisterOpen(false)} />
+      <AuditDrawer open={auditOpen} onClose={() => setAuditOpen(false)} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { AuditVerify, Decision, EvidenceStep, FtzPosition, FtzSummary, Health, Policy, Rule, Summary } from "./types";
+import type { AuditEvent, AuditVerify, Decision, EvidenceStep, FtzPosition, FtzSummary, Health, Policy, Rule, Summary } from "./types";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -66,6 +66,7 @@ export const api = {
       json({ additional_domestic, illustrative_profit }),
     ),
   auditVerify: () => req<AuditVerify>("/audit/verify"),
+  audit: (limit = 200) => req<AuditEvent[]>(`/audit?limit=${limit}`),
   fieldValidation: () =>
     req<{ quotes: { text: string; who: string; date: string; channel: string }[]; company_examples: { description: string; who: string; date: string }[]; label: string }>(
       "/field-validation",

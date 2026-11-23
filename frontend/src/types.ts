@@ -126,6 +126,17 @@ export interface FtzSummary extends FtzPosition {
   }[];
 }
 
+export interface AuditEvent {
+  id: number;
+  ts: string;
+  actor: string;
+  event_type: string;
+  entity_type: string;
+  entity_id: string;
+  prev_hash: string;
+  hash: string;
+}
+
 export interface AuditVerify {
   ok: boolean;
   checked: number;

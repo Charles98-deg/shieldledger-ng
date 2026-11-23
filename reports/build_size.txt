@@ -1,14 +1,14 @@
 # make evidence: frontend production build
-date: 2026-11-23T16:52:03Z
+date: 2026-11-23T17:35:11Z
 command: cd frontend && npm run build
 
 vite v5.4.11 building for production...
-✓ 55 modules transformed.
+✓ 57 modules transformed.
 dist/index.html                   1.02 kB │ gzip:  0.57 kB
-dist/assets/index-D6oyDDgs.css   31.91 kB │ gzip:  6.78 kB
-dist/assets/index--hPVS0Mr.js   214.93 kB │ gzip: 66.94 kB
-✓ built in 17.49s
+dist/assets/index--CmmGqQh.css   31.87 kB │ gzip:  6.70 kB
+dist/assets/index-Nppxb9og.js   226.26 kB │ gzip: 69.38 kB
+✓ built in 17.04s
 
 gzip -9 sizes (budget: 200 KB gzip JS):
-  frontend/dist/assets/index--hPVS0Mr.js     215038 bytes raw    66701 bytes gzip
-  frontend/dist/assets/index-D6oyDDgs.css     31909 bytes raw     6759 bytes gzip
+  frontend/dist/assets/index-Nppxb9og.js     226371 bytes raw    69206 bytes gzip
+  frontend/dist/assets/index--CmmGqQh.css     31866 bytes raw     6678 bytes gzip

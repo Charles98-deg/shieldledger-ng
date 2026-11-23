@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
-import { STATUS_LABEL, actionLine, reasonLine } from "../decisionText";
+import { plainCase, plainFlag, rankedFlags } from "../copy/plain";
+import { STATUS_LABEL, actionLine } from "../decisionText";
+import { Working } from "./RunList";
 import { isZero, naira, shareOf, toKobo } from "../money";
 import type { Decision, EvidenceStep } from "../types";
 import { ErrorBox, Loading } from "./Drawer";
@@ -8,23 +10,6 @@ import { EngineBadge } from "./EngineBadge";
 import { CloseIcon, StatusIcon } from "./Icons";
 import { FlagChip, STATUS_TONE } from "./StatusChip";
 import { StatusLabel } from "./StatusLabel";
-
-/** Decision banner: the verdict, what to do in money, and one plain-English reason, on the state's tint. */
-function DecisionBanner({ d }: { d: Decision }) {
-  const tone = STATUS_TONE[d.status];
-  return (
-    <div className={`px-5 py-4 ${tone.tint}`}>
-      <p className={`inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.06em] ${tone.text}`}>
-        <span className="scale-125">
-          <StatusIcon status={d.status} />
-        </span>
-        {STATUS_LABEL[d.status]}
-      </p>
-      <p className="tnum mt-1.5 text-xl font-bold leading-snug text-zinc-100">{actionLine(d)}</p>
-      <p className="mt-1 text-base leading-snug text-zinc-300">{reasonLine(d)}</p>
-    </div>
-  );
-}
 
 /** The invoice's gross as one bar: navy = net payable, light navy = WHT, orange = held. */
 function SplitBar({ d }: { d: Decision }) {
@@ -165,11 +150,12 @@ export function CaseFile({ d, onClose }: { d: Decision | null; onClose: () => vo
   if (!d)
     return (
       <div className="panel p-6 text-sm text-zinc-500">
-        Select an invoice to open its case file: the decision, the settlement and the evidence behind every number.
+        Select an invoice to see what happened, what to do, and what to pay versus hold.
       </div>
     );
 
   const isInvoice = d.kind === "INVOICE";
+  const ranked = rankedFlags(d);
   return (
     <article key={`${d.kind}-${d.subject_id}`} className="casefile-in panel overflow-hidden" aria-labelledby="cf-title">
       <header className="flex items-start justify-between gap-3 border-b border-zinc-800 px-5 py-4">
@@ -181,7 +167,6 @@ export function CaseFile({ d, onClose }: { d: Decision | null; onClose: () => vo
                 Invoice <span className="font-mono">{d.invoice_number}</span>
               </span>
             )}
-            {isInvoice ? <EngineBadge engine={d.engine} /> : <span className="text-zinc-500">{d.kind === "PO_PATTERN" ? "PO pattern · master data" : "vendor pattern · master data"}</span>}
           </div>
           <h2 id="cf-title" ref={head} tabIndex={-1} className="mt-1 text-xl font-bold tracking-[-0.01em] text-zinc-100 outline-none [overflow-wrap:anywhere]">
             {d.vendor_name}
@@ -192,19 +177,82 @@ export function CaseFile({ d, onClose }: { d: Decision | null; onClose: () => vo
         </button>
       </header>
 
-      <DecisionBanner d={d} />
+      <div className={`px-5 py-4 ${STATUS_TONE[d.status].tint}`}>
+        <p className={`inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.06em] ${STATUS_TONE[d.status].text}`}>
+          <span className="scale-125">
+            <StatusIcon status={d.status} />
+          </span>
+          {STATUS_LABEL[d.status]}
+        </p>
+      </div>
+
       <div className="divide-y divide-zinc-800">
+        <section aria-labelledby="cf-what" className="px-5 py-4">
+          <h3 id="cf-what" className="panel-head">
+            What happened
+          </h3>
+          {ranked.length === 0 ? (
+            <p className="mt-1 text-base text-zinc-200">{plainCase(d).sentence}</p>
+          ) : (
+            <ul className="mt-1 space-y-1.5 text-base text-zinc-200">
+              {ranked.map((f) => (
+                <li key={f.code}>{plainFlag(d, f).sentence}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section aria-labelledby="cf-do" className="px-5 py-4">
+          <h3 id="cf-do" className="panel-head">
+            What to do
+          </h3>
+          <p className={`mt-1 text-xl font-bold ${STATUS_TONE[d.status].text}`}>{plainCase(d).action}</p>
+          <p className="tnum mt-0.5 text-base text-zinc-300">{actionLine(d)}</p>
+          {isInvoice && (
+            <dl className="tnum mt-4 grid grid-cols-2 gap-3">
+              {d.excluded_from_totals ? (
+                <div className="col-span-2 rounded bg-zinc-950 px-4 py-3">
+                  <dt className="label">Not counted until checked</dt>
+                  <dd className="mt-0.5 text-2xl font-bold text-zinc-400 line-through decoration-zinc-500">{naira(d.gross)}</dd>
+                </div>
+              ) : (
+                <>
+                  <div className="rounded bg-emerald-50 px-4 py-3">
+                    <dt className="text-xs font-semibold text-emerald-300">Pay</dt>
+                    <dd className="mt-0.5 text-2xl font-bold text-zinc-100">{naira(d.net_safe_payable)}</dd>
+                  </div>
+                  <div className={`rounded px-4 py-3 ${isZero(d.blocked_or_hold) ? "bg-zinc-950" : "bg-orange-50"}`}>
+                    <dt className={`text-xs font-semibold ${isZero(d.blocked_or_hold) ? "text-zinc-500" : "text-orange-300"}`}>Hold</dt>
+                    <dd className="mt-0.5 text-2xl font-bold text-zinc-100">{naira(d.blocked_or_hold)}</dd>
+                  </div>
+                </>
+              )}
+            </dl>
+          )}
+          {d.remittance_due && !isZero(d.wht_to_remit) && (
+            <p className="tnum mt-3 text-sm text-zinc-500">
+              Also withhold WHT {naira(d.wht_to_remit)} and remit it by {d.remittance_due}.
+            </p>
+          )}
+        </section>
+
+        <div className="px-5 py-4">
+          <Working>
+            <div className="-mx-5 divide-y divide-zinc-800 border-t border-zinc-800">
+              <p className="flex flex-wrap items-center gap-2 px-5 pt-4 text-sm text-zinc-500">
+                Read by {isInvoice ? <EngineBadge engine={d.engine} /> : <span>{d.kind === "PO_PATTERN" ? "PO pattern · master data" : "vendor pattern · master data"}</span>}
+              </p>
         {isInvoice && <SettlementTape d={d} />}
 
         <section aria-labelledby="cf-why" className="px-5 py-4">
           <h3 id="cf-why" className="panel-head">
-            Why
+            Flags
           </h3>
           {d.flags.length === 0 && <p className="mt-1 text-sm text-zinc-500">No exceptions raised. Every check is in the evidence below.</p>}
           {d.flags.length > 0 && (
             <ul className="mt-2 space-y-2.5">
               {d.flags.map((f) => (
-                <li key={f.code} className="text-base text-zinc-200">
+                <li key={f.code} className="text-sm text-zinc-300">
                   <span className="block">{f.detail}</span>
                   <span className="mt-1 inline-block">
                     <FlagChip code={f.code} quiet />
@@ -248,6 +296,9 @@ export function CaseFile({ d, onClose }: { d: Decision | null; onClose: () => vo
             </ol>
           )}
         </section>
+            </div>
+          </Working>
+        </div>
       </div>
     </article>
   );
