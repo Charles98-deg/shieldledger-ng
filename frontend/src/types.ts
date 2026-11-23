@@ -137,5 +137,12 @@ export interface Health {
   app_env: string;
   today: string;
   rules_pack: string;
-  extraction: { gemini_available: boolean; gemini_model: string; gemini_fallback_models: string[]; offline_parser: boolean };
+  extraction: {
+    gemini_available: boolean;
+    gemini_state: "not_configured" | "configured_unused" | "active" | "failing";
+    gemini_active_model: string | null;
+    gemini_model: string;
+    gemini_fallback_models: string[];
+    offline_parser: boolean;
+  };
 }

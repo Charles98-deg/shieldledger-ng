@@ -58,19 +58,33 @@ class Gated:
 
 
 def run_extraction(
-    data: bytes, mime: str, settings: Settings, gemini: Extractor | None = None
+    data: bytes, mime: str, settings: Settings, gemini: Extractor | None = None,
+    breaker: gemini_client.Breaker | None = None,
 ) -> tuple[RawInvoice | None, str, list[dict]]:
-    """G3: Gemini chain → offline parser. Returns (raw|None, engine, attempts)."""
+    """G3: Gemini chain → offline parser. Returns (raw|None, engine, attempts).
+
+    `breaker` is shared across one batch: after the first document whose Gemini call fails,
+    the remaining documents skip Gemini (recorded as a skipped attempt, never silently).
+    """
     gemini = gemini or gemini_client.extract
+    breaker = breaker if breaker is not None else gemini_client.Breaker()
     attempts: list[dict] = []
-    if gemini_client.available(settings):
+    if gemini_client.available(settings) and breaker.is_open:
+        attempts.append({"engine": "gemini", "ok": False, "skipped": True,
+                         "error": f"circuit open for this batch after earlier failure: {breaker.reason}"})
+    elif gemini_client.available(settings):
+        breaker.calls += 1
         try:
             raw, model, att = gemini(data, mime, settings)
+            breaker.ok_model = model
             return raw, f"gemini:{model}", att
         except gemini_client.GeminiUnavailable as gu:
             attempts.extend(gu.attempts)
+            breaker.trip(gu.attempts[-1]["error"][:200] if gu.attempts else str(gu))
         except Exception as exc:  # noqa: BLE001
-            attempts.append({"engine": "gemini", "ok": False, "error": f"{type(exc).__name__}: {exc}"})
+            err = f"{type(exc).__name__}: {exc}"
+            attempts.append({"engine": "gemini", "ok": False, "error": err})
+            breaker.trip(err[:200])
     else:
         attempts.append({"engine": "gemini", "ok": False, "error": "GEMINI_API_KEY not set"})
     if mime == "application/pdf":
@@ -167,6 +181,7 @@ def ingest(
     today: date,
     gemini: Extractor | None = None,
     actor: str = "ui",
+    breaker: gemini_client.Breaker | None = None,
 ) -> dict:
     # G1 idempotency
     sha = hashlib.sha256(data).hexdigest()
@@ -189,7 +204,7 @@ def ingest(
     g = Gated()
 
     # G3 extraction
-    raw, engine, attempts = run_extraction(data, mime, settings, gemini)
+    raw, engine, attempts = run_extraction(data, mime, settings, gemini, breaker)
     docs.insert_extraction(conn, doc_id, engine, (raw or RawInvoice()).model_dump_json(), attempts)
     audit.append(conn, "GATE_G3_EXTRACTION", "document", doc_id, {"engine": engine, "attempts": attempts}, actor)
     if raw is None:

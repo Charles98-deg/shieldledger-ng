@@ -36,6 +36,17 @@ def verify(request: Request) -> dict:
         return audit.verify(conn)
 
 
+def _extraction_status(state) -> dict:
+    s = state.settings
+    configured = gemini_client.available(s)
+    st = getattr(state, "gemini_status", None) or gemini_client.GeminiStatus()
+    gemini_state = st.state if configured else "not_configured"
+    return {"gemini_available": configured, "gemini_state": gemini_state,
+            "gemini_active_model": st.active_model if configured and gemini_state == "active" else None,
+            "gemini_model": s.gemini_model, "gemini_fallback_models": list(s.gemini_fallback_models),
+            "offline_parser": True}
+
+
 @router.get("/health")
 def health(request: Request) -> dict:
     s = request.app.state.settings
@@ -43,8 +54,7 @@ def health(request: Request) -> dict:
         conn.execute("SELECT 1").fetchone()
     return {
         "status": "ok", "app_env": s.app_env, "today": today(request).isoformat(), "rules_pack": rules().pack,
-        "extraction": {"gemini_available": gemini_client.available(s), "gemini_model": s.gemini_model,
-                       "gemini_fallback_models": list(s.gemini_fallback_models), "offline_parser": True},
+        "extraction": _extraction_status(request.app.state),
     }
 
 
@@ -64,14 +74,18 @@ def reset_demo(app_state, ingest_pack: bool = True) -> dict:
         counts = master.seed_all(conn, SEED_DIR)
         audit.append(conn, "DEMO_RESET", "system", "seed", counts, actor="dev")
     ingested = []
+    breaker = gemini_client.Breaker()
     if ingest_pack:
         for pdf in sorted(DEMO_PACK_DIR.glob("*.pdf")):
             with db.session(app_state.db_path) as conn:
                 ingested.append(ingest(conn, pdf.read_bytes(), pdf.name, app_state.settings, app_state.clock.today(),
-                                       gemini=app_state.gemini, actor="dev"))
+                                       gemini=app_state.gemini, actor="dev", breaker=breaker))
         with db.session(app_state.db_path) as conn:
             service.evaluate_all(conn, app_state.clock.today(), actor="dev")
-    return {"seeded": counts, "ingested": len(ingested), "seconds": f"{time.perf_counter() - t0:.2f}",
+    status = getattr(app_state, "gemini_status", None)
+    if status is not None:
+        status.record(breaker)
+    return {"seeded": counts, "ingested": len(ingested), "gemini_calls": breaker.calls, "seconds": f"{time.perf_counter() - t0:.2f}",
             "engines": sorted({i.get("engine", "") for i in ingested})}
 
 

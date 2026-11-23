@@ -62,7 +62,7 @@ flowchart LR
 Everything in this repository was built during the sprint.
 
 - **Foundation:** Decimal money helpers that never use floats (`money.py`), plus an AST test that fails the build on any float in `backend/app/`. Also built: the statutory register YAML with typed loader and buyer policies, the Pydantic v2 raw/verified/domain models with invariants INV-1..3, and the SQLite schema with append-only audit triggers and the hash-chained audit log.
-- **Extraction (`extraction/`):** gates G1–G7, Gemini client with an env-driven model fallback chain, offline regex parser for the demo layout, per-document engine badge.
+- **Extraction (`extraction/`):** gates G1–G7, Gemini client with an env-driven model fallback chain (8 s per-call timeout, per-batch circuit breaker), offline regex parser for the demo layout, per-document engine badge.
 - **Engines (`engine/`):**
   - WHT on the approved base, with double rate when the payee has no TIN and policy-required categories.
   - VAT: input-VAT offset entitlement, an advisory when VAT is omitted on a standard-rated supply, and a hold on the VAT portion when a small, non-VAT-registered vendor charges VAT.
@@ -116,7 +116,7 @@ Open items (full list in [`docs/STATUTORY_REGISTER.md`](docs/STATUTORY_REGISTER.
 make test        # cd backend && pytest
 ```
 
-Result on 2026-11-23: **134 passed** (~25 s). No API key set; every pack document was extracted by `offline_regex`.
+Result on 2026-11-23: **142 passed** (~45 s). No API key set; every pack document was extracted by `offline_regex`.
 
 - Golden/unit T01–T20 are mapped to files in `backend/tests/` (`test_money_wht_vat.py`, `test_footing_gates.py`, `test_three_way.py`, `test_duplicates.py`, `test_split_po.py`, `test_ghost_vendor.py`, `test_registry_guard.py`, `test_ftz.py`, `test_audit_idempotency.py`, `test_offline_parser.py`, `test_no_float.py`, `test_e2e_pack.py`).
 - Hypothesis properties H1–H6 are in `test_properties.py`: conservation, bounds, duplicate symmetry and invariance, FTZ headroom optimality, Decimal round-trip through DB and API, and quantize idempotence.
@@ -163,7 +163,7 @@ Frontend: `npm run build` produces **59.98 KB gzip** JS and 4.51 KB gzip CSS (bu
 
 - The offline parser only handles the demo-pack `Label: value` layout. Other PDFs go to human review (a validation or low-confidence flag), not to a guess.
 - Images (PNG/JPEG) need Gemini. Without it they go to `NEEDS_HUMAN_REVIEW` with `OFFLINE_NO_OCR`.
-- **Gemini 3.x structured-output status:** untested. `scripts/smoke_gemini.py` was run on 2026-11-23 with **no `GEMINI_API_KEY` present** and reported `SKIPPED`. The Gemini path (`gemini-3.8-flash` → `gemini-3.6-flash` → `gemini-2.5-flash-lite`) is covered only by mocked tests: chain order, schema-failure fallback, and per-model failure recording. The demo runs entirely on `offline_regex`. Run `make smoke-gemini` with a key before relying on it.
+- **Gemini 3.x structured-output status:** untested against a live model. `scripts/smoke_gemini.py` was first run on 2026-11-23 with **no `GEMINI_API_KEY` present** and reported `SKIPPED`. A key added later the same day was rejected by Google (`400 API_KEY_INVALID`), so no Gemini call has succeeded yet. The Gemini path (`gemini-3.8-flash` → `gemini-3.6-flash` → `gemini-2.5-flash-lite`) is covered only by mocked tests: chain order, schema-failure fallback, per-model failure recording, and the per-batch circuit breaker (a mocked timeout gives one Gemini attempt per batch). The demo runs entirely on `offline_regex`. Run `make smoke-gemini` with a key before relying on it.
 - The taxpayer registry is a seeded fictional table, not a live NRS lookup.
 - All thresholds (price/quantity tolerances, duplicate fuzz and window, split-PO band, PO approval limit) are buyer-configurable policies, not law.
 - The FTZ interpretation panel uses a user-entered illustrative profit and shows two readings; it does not decide which applies.

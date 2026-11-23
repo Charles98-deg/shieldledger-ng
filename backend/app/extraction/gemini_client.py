@@ -5,6 +5,8 @@ No model name is hard-coded beyond the env defaults in config.py.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from app.config import GEMINI_TIMEOUT_MS, Settings
 from app.models.raw import RawInvoice, RawInvoiceLLM
 
@@ -19,9 +21,60 @@ PROMPT = (
 
 
 class GeminiUnavailable(Exception):
-    def __init__(self, attempts: list[dict]):
-        super().__init__("all Gemini models failed")
+    """fatal=True: a failure no other model can fix (timeout, auth, network), so the chain stopped early."""
+
+    def __init__(self, attempts: list[dict], fatal: bool = False):
+        super().__init__("all Gemini models failed" if not fatal else "Gemini failed (timeout/auth/network)")
         self.attempts = attempts
+        self.fatal = fatal
+
+
+_FATAL_MARKERS = ("timeout", "timed out", "deadline", "api_key_invalid", "api key not valid",
+                  "permission_denied", "unauthenticated", "connecterror", "connection")
+
+
+def is_fatal(exc: BaseException) -> bool:
+    """Timeouts, auth and network errors hit every model in the chain alike: stop instead of retrying."""
+    if isinstance(exc, (TimeoutError, ConnectionError)):
+        return True
+    try:
+        import httpx
+        if isinstance(exc, (httpx.TimeoutException, httpx.NetworkError)):
+            return True
+    except ImportError:  # pragma: no cover - httpx ships with google-genai
+        pass
+    if getattr(exc, "code", None) in (401, 403):
+        return True
+    text = f"{type(exc).__name__}: {exc}".lower()
+    return any(m in text for m in _FATAL_MARKERS)
+
+
+@dataclass
+class Breaker:
+    """Per-batch circuit breaker. Opens on the first failed Gemini document; later documents skip Gemini."""
+
+    is_open: bool = False
+    reason: str | None = None
+    calls: int = 0          # documents sent to Gemini in this batch
+    ok_model: str | None = None
+
+    def trip(self, reason: str) -> None:
+        self.is_open = True
+        self.reason = reason
+
+
+@dataclass
+class GeminiStatus:
+    """Process-wide extraction status shown in /api/health. 'active' only after a real successful call."""
+
+    state: str = "configured_unused"  # configured_unused | active | failing
+    active_model: str | None = None
+
+    def record(self, breaker: Breaker) -> None:
+        if breaker.ok_model and not breaker.is_open:
+            self.state, self.active_model = "active", breaker.ok_model
+        elif breaker.is_open:
+            self.state, self.active_model = "failing", None
 
 
 def available(settings: Settings) -> bool:
@@ -55,4 +108,6 @@ def extract(data: bytes, mime: str, settings: Settings) -> tuple[RawInvoice, str
             return parsed.to_raw(), model, attempts
         except Exception as exc:  # noqa: BLE001 - every failure is recorded, never swallowed
             attempts.append({"engine": f"gemini:{model}", "ok": False, "error": f"{type(exc).__name__}: {str(exc)[:300]}"})
+            if is_fatal(exc):
+                raise GeminiUnavailable(attempts, fatal=True) from exc
     raise GeminiUnavailable(attempts)

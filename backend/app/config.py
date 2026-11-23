@@ -18,7 +18,7 @@ load_dotenv(ROOT / ".env")
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 MAX_REQUEST_BYTES = 64 * 1024 * 1024
-GEMINI_TIMEOUT_MS = 25_000
+GEMINI_TIMEOUT_MS = 8_000  # per call; a timeout opens the per-batch circuit breaker
 ALLOWED_MIME = ("application/pdf", "image/png", "image/jpeg")
 
 # Buyer policy defaults (status BUYER_POLICY). Values are strings; typed in rules/loader.py.

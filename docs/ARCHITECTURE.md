@@ -8,6 +8,16 @@
 4. **Read-only.** Output is a recommendation and an evidence pack. No payment execution and no ERP write-back.
 5. **Fail loud, not silent.** Unknown values become explicit statuses (`POLICY_REQUIRED`, `NEEDS_HUMAN_REVIEW`, `OFFLINE_NO_OCR`). A failed LLM falls back to the offline parser, and the engine that produced each extraction is persisted and shown.
 
+## Gemini circuit breaker
+
+- Each Gemini call has an 8 s timeout (`GEMINI_TIMEOUT_MS`).
+- One upload request, or one `reset-demo`, is one batch. A `Breaker` is shared across the batch:
+  - No key: Gemini is never called.
+  - A timeout, auth error (for example `API_KEY_INVALID`) or network error stops the model chain at once, because no fallback model can fix it. The breaker opens.
+  - A model-specific failure (schema mismatch, unknown model) tries the next fallback for that document. If the whole chain fails, the breaker opens.
+  - Once the breaker is open, the remaining documents in the batch go straight to the offline parser. Each one records a `skipped` attempt with the reason in `extractions.attempts_json` and the G3 audit event.
+- `/api/health` reports `gemini_state` (`not_configured`, `configured_unused`, `active` or `failing`). `gemini_active_model` is set only after a real successful call. The UI header reads these fields.
+
 ## Data flow
 
 ```mermaid

@@ -20,6 +20,20 @@ function tabFromHash(): Tab {
   return (TABS.find((t) => t.id === h)?.id ?? "run") as Tab;
 }
 
+function geminiLabel(h: Health): string {
+  const x = h.extraction;
+  switch (x.gemini_state) {
+    case "active":
+      return `Gemini: ${x.gemini_active_model}`;
+    case "failing":
+      return "Gemini: last call failed, offline parser active";
+    case "configured_unused":
+      return "Gemini: no successful call yet, offline parser active";
+    default:
+      return "Gemini: not configured, offline parser active";
+  }
+}
+
 export default function App() {
   const [tab, setTab] = useState<Tab>(tabFromHash);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -38,7 +52,7 @@ export default function App() {
       .health()
       .then(setHealth)
       .catch(() => setHealthErr(true));
-  }, []);
+  }, [refreshKey]);
 
   const bump = () => setRefreshKey((k) => k + 1);
 
@@ -79,10 +93,7 @@ export default function App() {
       {health && (
         <div className="mt-2 flex flex-wrap gap-x-4 text-[11px] text-zinc-500">
           <span>rules pack {health.rules_pack}</span>
-          <span>
-            extraction:{" "}
-            {health.extraction.gemini_available ? `Gemini (${health.extraction.gemini_model} → ${health.extraction.gemini_fallback_models.join(" → ")}) → offline parser` : "offline parser (no Gemini key)"}
-          </span>
+          <span>{geminiLabel(health)}</span>
           <span>LLM transcribes · Python decides</span>
         </div>
       )}

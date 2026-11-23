@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app import db
 from app.api import documents, ftz, meta, policies, runs
+from app.extraction import gemini_client
 from app.config import MAX_REQUEST_BYTES, SEED_DIR, Clock, get_settings
 from app.repo import master
 
@@ -22,6 +23,7 @@ def create_app(db_path: str | None = None, clock: Clock | None = None, gemini=No
     app.state.db_path = db_path or settings.db_path
     app.state.clock = clock or Clock()
     app.state.gemini = gemini
+    app.state.gemini_status = gemini_client.GeminiStatus()
 
     db.migrate(app.state.db_path)
     with db.session(app.state.db_path) as conn:
