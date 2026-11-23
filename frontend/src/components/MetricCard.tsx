@@ -16,22 +16,25 @@ export function MetricCard({
   tone: "emerald" | "amber";
   footnote?: ReactNode;
 }) {
-  const ring = tone === "emerald" ? "border-emerald-500/40" : "border-amber-400/40";
-  const text = tone === "emerald" ? "text-emerald-300" : "text-amber-200";
+  const band = tone === "emerald" ? "bg-emerald-500" : "bg-amber-400";
+  const text = tone === "emerald" ? "text-emerald-300" : "text-amber-300";
   return (
-    <section className={`rounded-lg border ${ring} bg-zinc-900/70 p-4 sm:p-5`} aria-label={title}>
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">{title}</h2>
+    <section className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900" aria-label={title}>
+      <div aria-hidden className={`h-1 ${band}`} />
+      <div className="p-4 sm:p-5">
+      <h2 className="text-base font-bold text-zinc-100">{title}</h2>
       {caption && <p className="mt-0.5 text-xs text-zinc-400">{caption}</p>}
-      <p className={`tnum mt-3 text-3xl font-bold sm:text-4xl ${text}`}>{naira(total)}</p>
+      <p className={`tnum mt-3 text-3xl font-bold tracking-[-0.02em] sm:text-[2.5rem] sm:leading-none ${text}`}>{naira(total)}</p>
       <dl className="mt-4 space-y-1.5 border-t border-zinc-800 pt-3 text-sm">
         {lines.map((l, i) => (
           <div key={i} className="flex items-baseline justify-between gap-3">
             <dt className="text-zinc-400">{l.label}</dt>
-            <dd className="tnum font-medium text-zinc-100">{naira(l.value)}</dd>
+            <dd className="tnum font-semibold text-zinc-100">{naira(l.value)}</dd>
           </div>
         ))}
       </dl>
-      {footnote && <div className="mt-3 text-xs leading-relaxed text-zinc-500">{footnote}</div>}
+      {footnote && <div className="mt-3 text-sm leading-relaxed text-zinc-400">{footnote}</div>}
+      </div>
     </section>
   );
 }

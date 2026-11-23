@@ -1,38 +1,40 @@
 import type { DecisionStatus } from "../types";
+import { StatusIcon } from "./Icons";
+import { STATUS_LABEL } from "../decisionText";
 
 const STYLE: Record<DecisionStatus, string> = {
-  RELEASE: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/40",
-  RELEASE_PARTIAL: "bg-amber-400/15 text-amber-200 ring-amber-400/40",
-  HOLD: "bg-orange-500/15 text-orange-300 ring-orange-500/40",
-  BLOCKED: "bg-red-500/15 text-red-300 ring-red-500/50",
-  NEEDS_HUMAN_REVIEW: "bg-zinc-500/20 text-zinc-300 ring-zinc-400/40",
+  RELEASE: "bg-[#e3f1e8] text-emerald-300 ring-emerald-500/50",
+  RELEASE_PARTIAL: "bg-[#f8edd3] text-amber-300 ring-amber-400/60",
+  HOLD: "bg-[#f8e1d3] text-orange-300 ring-orange-400/60",
+  BLOCKED: "bg-red-400 text-white ring-red-400",
+  NEEDS_HUMAN_REVIEW: "bg-zinc-900 text-zinc-200 ring-zinc-600",
 };
 
-const LABEL: Record<DecisionStatus, string> = {
-  RELEASE: "Release",
-  RELEASE_PARTIAL: "Release partial",
-  HOLD: "Hold",
-  BLOCKED: "Blocked",
-  NEEDS_HUMAN_REVIEW: "Needs review",
-};
 
 export function StatusChip({ status }: { status: DecisionStatus }) {
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${STYLE[status]}`}>
-      {LABEL[status]}
+    <span title={`Engine status: ${status}`} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded px-2 py-1 text-xs font-bold ring-1 ring-inset ${STYLE[status]}`}>
+      <StatusIcon status={status} />
+      {STATUS_LABEL[status]}
     </span>
   );
 }
 
-export function FlagChip({ code, title }: { code: string; title?: string }) {
+export function FlagChip({ code, title, quiet }: { code: string; title?: string; quiet?: boolean }) {
   const tone =
     code === "TIN_FORMAT_WARNING" || code.endsWith("ADVISORY")
-      ? "border-sky-500/40 text-sky-300"
+      ? "border-sky-400/60 bg-[#e6f0f7] text-sky-300"
       : code === "UNREGISTERED_VENDOR_BLOCKED" || code === "GHOST_VENDOR_SUSPECTED"
-        ? "border-red-500/50 text-red-300"
-        : "border-zinc-600 text-zinc-300";
+        ? "border-red-400/70 bg-[#f9e3e3] text-red-300"
+        : "border-zinc-700 bg-zinc-900 text-zinc-200";
+  if (quiet)
+    return (
+      <span title={title} className="inline-block whitespace-nowrap rounded border border-zinc-800 px-1 font-mono text-xs text-zinc-500">
+        {code}
+      </span>
+    );
   return (
-    <span title={title} className={`inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] ${tone}`}>
+    <span title={title} className={`inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-xs font-semibold ${tone}`}>
       {code}
     </span>
   );

@@ -57,7 +57,7 @@ export function UploadZone({ onDone, devMode }: { onDone: () => void; devMode: b
           upload(Array.from(e.dataTransfer.files));
         }}
         className={`flex flex-col items-start gap-3 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between ${
-          drag ? "border-emerald-400 bg-emerald-500/5" : "border-zinc-700 bg-zinc-900/50"
+          drag ? "border-adire-600 bg-adire-50" : "border-zinc-600 bg-zinc-900"
         }`}
       >
         <div className="text-sm text-zinc-300">
@@ -79,7 +79,7 @@ export function UploadZone({ onDone, devMode }: { onDone: () => void; devMode: b
           <button
             disabled={!!busy}
             onClick={() => input.current?.click()}
-            className="rounded border border-zinc-600 px-3 py-1.5 text-sm hover:bg-zinc-800 disabled:opacity-50"
+            className="rounded border border-zinc-600 bg-zinc-900 px-4 py-2 text-sm font-semibold hover:bg-zinc-950 disabled:opacity-50"
           >
             Choose files
           </button>
@@ -87,7 +87,7 @@ export function UploadZone({ onDone, devMode }: { onDone: () => void; devMode: b
             <button
               disabled={!!busy}
               onClick={loadPack}
-              className="rounded bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+              className="rounded bg-adire-800 px-4 py-2 text-sm font-semibold text-white hover:bg-adire-700 active:bg-adire-900 disabled:opacity-50"
             >
               Load demo pack
             </button>

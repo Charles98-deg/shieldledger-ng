@@ -34,6 +34,18 @@ function geminiLabel(h: Health): string {
   }
 }
 
+/** Adire-style mark: a resist-dyed square, the undyed band is the money held back. */
+function Mark() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden className="shrink-0">
+      <rect width="34" height="34" rx="4" fill="#f3f3ef" />
+      <rect x="5" y="5" width="24" height="9" fill="#1d2d6b" />
+      <rect x="5" y="17" width="15" height="12" fill="#1d2d6b" />
+      <rect x="22.75" y="17.75" width="5.5" height="10.5" fill="none" stroke="#1d2d6b" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<Tab>(tabFromHash);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -57,42 +69,47 @@ export default function App() {
   const bump = () => setRefreshKey((k) => k + 1);
 
   return (
-    <div className="mx-auto min-h-screen max-w-7xl px-4 sm:px-6">
-      <header className="flex flex-col gap-3 border-b border-zinc-800 py-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <div aria-hidden className="grid h-8 w-8 place-items-center rounded bg-emerald-600 font-black text-white">
-            S
+    <div className="min-h-screen">
+      <header className="bg-adire-900 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 pt-3 sm:px-6 md:flex-row md:items-end md:justify-between">
+          <div className="flex items-center gap-3 pb-1 md:pb-3">
+            <Mark />
+            <div>
+              <div className="text-lg font-bold leading-tight tracking-[-0.01em]">ShieldLedger NG</div>
+              <div className="text-xs text-adire-200">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
+            </div>
           </div>
-          <div>
-            <div className="font-bold leading-tight">ShieldLedger NG</div>
-            <div className="text-[11px] text-zinc-400">Pre-payment AP tax &amp; leakage guard · Nigeria 2026 rules · read-only</div>
-          </div>
+          <nav className="-mx-1 flex flex-wrap items-end gap-x-1 gap-y-2" aria-label="Screens">
+            {TABS.map((t) => (
+              <a
+                key={t.id}
+                href={`#/${t.id}`}
+                aria-current={tab === t.id ? "page" : undefined}
+                className={`rounded-t px-3.5 py-2.5 text-sm font-semibold ${
+                  tab === t.id ? "bg-zinc-950 text-adire-900" : "text-adire-100 hover:bg-adire-800 hover:text-white"
+                }`}
+              >
+                {t.label}
+              </a>
+            ))}
+            <span className="mx-2 hidden h-6 w-px self-center bg-adire-700 md:inline-block" />
+            <button onClick={() => setRegisterOpen(true)} className="mb-1.5 rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+              Statutory Register
+            </button>
+            <button onClick={() => setPoliciesOpen(true)} className="mb-1.5 rounded border border-adire-600 px-3 py-1.5 text-sm font-semibold text-adire-50 hover:bg-adire-800">
+              Policies
+            </button>
+          </nav>
         </div>
-        <nav className="flex flex-wrap items-center gap-1" aria-label="Screens">
-          {TABS.map((t) => (
-            <a
-              key={t.id}
-              href={`#/${t.id}`}
-              aria-current={tab === t.id ? "page" : undefined}
-              className={`rounded px-3 py-1.5 text-sm ${tab === t.id ? "bg-zinc-100 font-semibold text-zinc-900" : "text-zinc-300 hover:bg-zinc-800"}`}
-            >
-              {t.label}
-            </a>
-          ))}
-          <span className="mx-1 hidden h-5 w-px bg-zinc-700 md:inline-block" />
-          <button onClick={() => setRegisterOpen(true)} className="rounded border border-zinc-700 px-3 py-1.5 text-sm hover:bg-zinc-800">
-            Statutory Register
-          </button>
-          <button onClick={() => setPoliciesOpen(true)} className="rounded border border-zinc-700 px-3 py-1.5 text-sm hover:bg-zinc-800">
-            Policies
-          </button>
-        </nav>
       </header>
 
-      {healthErr && <div className="mt-3 rounded border border-red-500/40 bg-red-500/10 p-2 text-sm text-red-200">Backend unreachable. Start it with <code>make dev</code>.</div>}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      {healthErr && <div className="mt-3 rounded border border-red-400 bg-red-500/10 p-2 text-sm text-red-300">Backend unreachable. Start it with <code>make dev</code>.</div>}
       {health && (
-        <div className="mt-2 flex flex-wrap gap-x-4 text-[11px] text-zinc-500">
-          <span>rules pack {health.rules_pack}</span>
+        <div className="flex flex-wrap gap-x-5 gap-y-1 border-b border-zinc-800 py-2.5 text-xs text-zinc-400">
+          <span>
+            Rules pack <span className="font-mono font-semibold text-zinc-200">{health.rules_pack}</span>
+          </span>
           <span>{geminiLabel(health)}</span>
           <span>LLM transcribes · Python decides</span>
         </div>
@@ -105,6 +122,7 @@ export default function App() {
       </main>
 
       <Footer />
+      </div>
       <PolicyPanel open={policiesOpen} onClose={() => setPoliciesOpen(false)} onChanged={bump} />
       <RegisterDrawer open={registerOpen} onClose={() => setRegisterOpen(false)} />
     </div>

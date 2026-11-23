@@ -44,7 +44,7 @@ export function RegisterDrawer({ open, onClose }: { open: boolean; onClose: () =
                 onClick={() => setFilter(s)}
                 aria-pressed={filter === s}
                 title={s === "ALL" ? "" : STATUS_HELP[s]}
-                className={`rounded px-2 py-0.5 font-mono text-[10px] ${filter === s ? "bg-zinc-200 text-zinc-900" : "bg-zinc-800 text-zinc-300"}`}
+                className={`rounded px-2 py-0.5 font-mono text-xs ${filter === s ? "bg-zinc-200 text-zinc-900" : "bg-zinc-800 text-zinc-300"}`}
               >
                 {s} ({s === "ALL" ? data.rules.length : data.rules.filter((r) => r.status === s).length})
               </button>
@@ -55,12 +55,12 @@ export function RegisterDrawer({ open, onClose }: { open: boolean; onClose: () =
               <li key={r.id} className="rounded border border-zinc-800 p-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs font-semibold">{r.id}</span>
-                  <span className="font-mono text-[10px] text-zinc-500">v{r.version}</span>
+                  <span className="font-mono text-xs text-zinc-500">v{r.version}</span>
                   <StatusLabel status={r.status} />
-                  {r.kind === "control" && <span className="text-[10px] text-zinc-500">buyer control (not law)</span>}
+                  {r.kind === "control" && <span className="text-xs text-zinc-500">buyer control (not law)</span>}
                 </div>
                 <div className="mt-1 text-xs text-zinc-300">{r.cite}</div>
-                <div className="tnum mt-1 font-mono text-xs text-zinc-400">{show(r.value)}</div>
+                <div className="tnum mt-1 text-sm text-zinc-400">{show(r.value)}</div>
                 {r.note && <p className="mt-1 text-xs text-zinc-500">{r.note}</p>}
               </li>
             ))}

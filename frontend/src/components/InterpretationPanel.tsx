@@ -20,12 +20,12 @@ export function InterpretationPanel({ base, scenario }: { base: FtzPosition; sce
     },
   ];
   return (
-    <section className="rounded-lg border border-amber-400/30 bg-zinc-900/70 p-4" aria-label="Interpretation">
+    <section className="rounded-lg border border-amber-400/30 bg-zinc-900 p-4" aria-label="Interpretation">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">If the 25% line is crossed: two readings</h2>
         <div className="flex gap-1">
           <StatusLabel status="CONFLICTING" />
-          <span className="text-[10px] text-zinc-500">FTZ_DOMESTIC_THRESHOLD</span>
+          <span className="text-xs text-zinc-500">FTZ_DOMESTIC_THRESHOLD</span>
         </div>
       </div>
       <p className="mt-1 text-xs text-amber-200/90">Interpretation not settled in sources — see Statutory Register.</p>
@@ -40,12 +40,12 @@ export function InterpretationPanel({ base, scenario }: { base: FtzPosition; sce
               <span className="mr-1 rounded bg-zinc-800 px-1.5 font-mono font-bold text-zinc-200">{r.k}</span>
               {r.title}
             </div>
-            <div className="mt-0.5 font-mono text-[10px] text-zinc-500">{r.formula}</div>
+            <div className="mt-0.5 font-mono text-xs text-zinc-500">{r.formula}</div>
             <div className="tnum mt-2 text-2xl font-bold">{naira(r.base)}</div>
-            <div className="text-[10px] text-zinc-500">at current share {base.share_pct}</div>
+            <div className="text-xs text-zinc-500">at current share {base.share_pct}</div>
             {r.scn && (
               <div className="tnum mt-1 text-sm text-orange-200">
-                {naira(r.scn)} <span className="text-[10px] text-zinc-500">at scenario share {scenario?.share_pct_4dp}</span>
+                {naira(r.scn)} <span className="text-xs text-zinc-500">at scenario share {scenario?.share_pct_4dp}</span>
               </div>
             )}
           </div>

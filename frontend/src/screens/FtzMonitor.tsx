@@ -52,7 +52,7 @@ export function FtzMonitor({ refreshKey, onChanged }: { refreshKey: number; onCh
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold">Free-zone monitor · Qua River Agro-Processing FZE (fictional)</h1>
+        <h1 className="text-2xl font-bold tracking-[-0.02em]">Free-zone monitor · Qua River Agro-Processing FZE (fictional)</h1>
         <p className="text-sm text-zinc-400">
           Share of sales into the customs territory vs the 25% line in the NTA 2025 free-zone provisions <StatusLabel status={rule("FTZ_DOMESTIC_THRESHOLD")?.status ?? "CONFLICTING"} />.
           Illustrative ledger.
@@ -70,16 +70,16 @@ export function FtzMonitor({ refreshKey, onChanged }: { refreshKey: number; onCh
       <FtzSplitBar c={s.classification} />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4 md:col-span-1">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4 md:col-span-1">
           <FtzGauge shareStr={s.share} sharePct={s.share_pct} band={s.band} />
           <p className="mt-2 text-center text-xs text-zinc-500">Bands: &lt;18% safe · &lt;22% watch · &lt;25% critical · 25% line</p>
         </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Headroom</h2>
           <p className="tnum mt-2 text-3xl font-bold text-orange-200">{naira(s.headroom)}</p>
           <p className="mt-1 text-xs text-zinc-500">Extra domestic sales (added to both domestic and total) before the share reaches the line under the selected reading. Floored to the kobo.</p>
         </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Boundary reading</h2>
           <div className="mt-2 space-y-1" role="radiogroup" aria-label="FTZ boundary">
             {BOUNDARIES.map((b) => (

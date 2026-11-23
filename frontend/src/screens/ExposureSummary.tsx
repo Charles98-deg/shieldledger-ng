@@ -35,7 +35,7 @@ export function ExposureSummary({ refreshKey }: { refreshKey: number }) {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold">Exposure summary</h1>
+        <h1 className="text-2xl font-bold tracking-[-0.02em]">Exposure summary</h1>
         <p className="text-sm text-zinc-400">
           Two separate measures — <strong className="text-zinc-200">never added together</strong>. Invoices needing human review are excluded from every figure.
         </p>
@@ -88,30 +88,30 @@ export function ExposureSummary({ refreshKey }: { refreshKey: number }) {
         totalLabel="Gross invoiced"
         ok={s.conservation.ok}
         parts={[
-          { label: "Net safe payable", value: s.conservation.net_safe_payable, color: "bg-emerald-500" },
-          { label: "WHT to remit", value: s.conservation.wht_to_remit, color: "bg-sky-500" },
-          { label: "Blocked / hold", value: s.conservation.blocked_or_hold, color: "bg-orange-500" },
+          { label: "Net safe payable", value: s.conservation.net_safe_payable, color: "dye-net" },
+          { label: "WHT to remit", value: s.conservation.wht_to_remit, color: "dye-wht" },
+          { label: "Blocked / hold", value: s.conservation.blocked_or_hold, color: "dye-held" },
         ]}
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Pending verification holds</h2>
           <p className="tnum mt-2 text-2xl font-bold">{naira(s.pending_verification_holds)}</p>
           <p className="mt-1 text-xs text-zinc-500">Held until registration / VAT registration is proven. Not counted as saved.</p>
         </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Advisories (not counted)</h2>
           <p className="tnum mt-2 text-2xl font-bold text-sky-200">{naira(s.advisories.vat_self_account)}</p>
           <p className="mt-1 text-xs text-zinc-500">
             VAT self-account exposure where VAT was omitted; the Service <em>may</em> direct this (NTA s.155(2)).
           </p>
         </section>
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Audit chain</h2>
           {audit && (
             <p className={`mt-2 text-lg font-bold ${audit.ok ? "text-emerald-300" : "text-red-300"}`} role="status">
-              {audit.ok ? `✓ Audit chain intact: ${audit.checked} events` : `✗ Chain broken at event #${audit.first_bad_id}`}
+              {audit.ok ? `Audit chain intact: ${audit.checked} events` : `Chain broken at event #${audit.first_bad_id}`}
             </p>
           )}
           <p className="mt-1 text-xs text-zinc-500">SHA-256 hash chain, append-only (UPDATE/DELETE blocked by DB triggers).</p>

@@ -30,7 +30,7 @@ export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) 
   }
 
   return (
-    <section className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-4" aria-label="Scenario">
+    <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-4" aria-label="Scenario">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">What if we sell more into the customs territory?</h2>
       <form
         className="mt-3 flex flex-col gap-2 sm:flex-row"
@@ -44,9 +44,9 @@ export function ScenarioInput({ onResult }: { onResult: (r: FtzPosition | null) 
         </label>
         <div className="flex flex-1 items-center rounded border border-zinc-700 bg-zinc-950 px-2">
           <span className="text-zinc-500">₦</span>
-          <input id="scn" value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent px-1 py-1.5 font-mono outline-none" />
+          <input id="scn" value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent px-1 py-1.5 outline-none" />
         </div>
-        <button disabled={busy} className="rounded bg-orange-500 px-4 py-1.5 text-sm font-semibold text-zinc-950 hover:bg-orange-400 disabled:opacity-50">
+        <button disabled={busy} className="rounded bg-adire-800 px-4 py-2 text-sm font-semibold text-white hover:bg-adire-700 active:bg-adire-900 disabled:opacity-50">
           {busy ? "Computing…" : "Run scenario"}
         </button>
         {res && (
