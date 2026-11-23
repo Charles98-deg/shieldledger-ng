@@ -124,7 +124,7 @@ const HOLD_REASON: Record<string, string> = {
 /**
  * The action always follows the engine status, never stronger than it:
  * BLOCKED → "Don't pay"; HOLD → "Hold: <reason>"; NEEDS_HUMAN_REVIEW → "Check by hand";
- * RELEASE_PARTIAL → "Pay <qty or amount> only"; RELEASE → "Pay" or a flag's pay-and-follow-up action.
+ * RELEASE_PARTIAL → "Pay for the <qty> delivered" or "Pay <amount> only"; RELEASE → "Pay" or a flag's pay-and-follow-up action.
  * Quantities come from the short-delivery flag text; amounts from the API's net_safe_payable.
  */
 function statusAction(d: Decision, top: Flag | undefined, releaseAction: string | undefined): string {
@@ -141,7 +141,7 @@ function statusAction(d: Decision, top: Flag | undefined, releaseAction: string 
       const holds = d.flags.filter((f) => f.code.endsWith("_HOLD"));
       const short = holds.length === 1 && holds[0].code === "SHORT_DELIVERY_HOLD" ? holds[0] : undefined;
       const qty = short && new RegExp(`GRN delivered ${NUM}`).exec(short.detail)?.[1];
-      return qty ? `Pay ${qty} only` : `Pay ${naira(d.net_safe_payable)} only`;
+      return qty ? `Pay for the ${qty} delivered` : `Pay ${naira(d.net_safe_payable)} only`;
     }
     case "RELEASE":
       return releaseAction ?? "Pay";
