@@ -1,0 +1,308 @@
+# ShieldLedger NG statutory register, pack ng_2026_v1.
+# Every number is a QUOTED string so YAML never produces a float.
+# No entry is labelled VERIFIED_PRIMARY: the gazetted primary text has not been read
+# for these items. Most citations come from law-firm / tax-practitioner summaries.
+# Verify against the Official Gazette (No. 117, Vol. 112, 26 June 2025) before relying on them.
+pack: ng_2026_v1
+effective_date: "2026-01-01"
+
+rules:
+  - id: VAT_RATE
+    version: 1
+    kind: statute
+    value: "0.075"
+    cite: "NTA 2025 s.146 (imposition)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Rate 7.5%. Secondary source: Streamsowers & Köhn (Legal500, 28 May 2026). URL not recorded in the brief."
+
+  - id: VAT_INVOICE_CONTENT
+    version: 1
+    kind: statute
+    value: "supplier Tax ID, invoice no., date, buyer, gross amount, VAT charged and rate"
+    cite: "NTA 2025 s.153"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Basis for 'missing TIN => input VAT not claimable'."
+
+  - id: INPUT_VAT_RECOVERY
+    version: 1
+    kind: statute
+    value: "offset"
+    cite: "NTA 2025 s.156(1); s.156(5)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Input VAT is offset against output VAT; excess output remitted. Modelled as an offset entitlement, never cash received. (An earlier draft cited s.151; not supported by sources found.)"
+
+  - id: VAT_EXEMPT_SUPPLIES
+    version: 1
+    kind: statute
+    value: "exempt list incl. petroleum products (unless Minister directs otherwise)"
+    cite: "NTA 2025 s.186; s.186(2)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Used for the AGO control (D11). Supply type comes from the PO line, not the LLM."
+
+  - id: VAT_ZERO_RATED
+    version: 1
+    kind: statute
+    value: "zero-rated list"
+    cite: "NTA 2025 s.187"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Informational only."
+
+  - id: VAT_SELF_ACCOUNT
+    version: 1
+    kind: statute
+    value: "advisory"
+    cite: "NTA 2025 s.155(2)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "The Service MAY direct a recipient to self-account VAT where an invoice omitted it. Implemented as an ADVISORY exposure, never an automatic charge. A 'mandatory' reading is UNVERIFIED and not used."
+
+  - id: SMALL_BUSINESS_DEF
+    version: 1
+    kind: statute
+    value:
+      turnover_max: "100000000.00"
+      fixed_assets_max: "250000000.00"
+      excludes: "professional-services providers"
+    cite: "NTAA 2025 definition (section UNVERIFIED)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Legal500/KPMG summaries. Section number unknown."
+
+  - id: SMALL_BUSINESS_VAT_EFFECT
+    version: 1
+    kind: statute
+    value: "small business may not charge VAT"
+    cite: "not located"
+    status: UNVERIFIED
+    source_url: null
+    note: "Therefore INVALID_VAT_CHARGE only HOLDS the VAT portion pending proof of VAT registration; the invoice is never rejected. Toggle SMALL_VENDOR_VAT_HOLD (default ON)."
+
+  - id: WHT_RATES
+    version: 1
+    kind: statute
+    value:
+      GOODS: {rate: "0.02", status: BRIEF_ONLY}
+      GENERAL_SERVICES: {rate: "0.02", status: SECONDARY_VERIFIED}
+      CONSTRUCTION: {rate: "0.02", status: BRIEF_ONLY}
+      PROFESSIONAL: {rate: "0.05", status: SECONDARY_VERIFIED}
+      RENT: {rate: null, status: CONFLICTING}
+      OTHER: {rate: null, status: UNVERIFIED}
+    cite: "Deduction of Tax at Source (Withholding) Regulations 2024 (issued 2 Oct 2024)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Services/professional rates secondary-verified; goods & construction from the brief only. Rent: sources conflict (5% vs 10%) so there is no default (POLICY_REQUIRED via WHT_RENT_RATE). Any other category: POLICY_REQUIRED."
+
+  - id: WHT_NO_TIN_DOUBLE
+    version: 1
+    kind: statute
+    value: "2"
+    cite: "pasted spec / enterprise brief"
+    status: BRIEF_ONLY
+    source_url: null
+    note: "Payee without TIN => double rate. Toggle WHT_NO_TIN_DOUBLE (default ON)."
+
+  - id: WHT_SMALL_PAYER_EXEMPT
+    version: 1
+    kind: statute
+    value: "exempt"
+    cite: "blueprint research"
+    status: CONFLICTING
+    source_url: null
+    note: "Payments by a small-company payer exempt; direction and threshold disputed between sources. Toggle default OFF; the demo buyer is not a small company."
+
+  - id: WHT_FAILURE_TO_DEDUCT
+    version: 1
+    kind: statute
+    value: "0.40"
+    cite: "NTAA 2025 s.105"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Penalty = 40% of the amount not deducted. Secondary source: Pryme penalties table (reads gazetted text)."
+
+  - id: WHT_REMITTANCE
+    version: 1
+    kind: statute
+    value:
+      due_day: "21"
+      late_rate_pa: "0.10"
+    cite: "NTAA 2025 s.107(1)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Remit by the 21st of the following month; late => amount + 10% p.a. + interest at CBN MPR. Interest computed only if the user enters an MPR. Excluded from headline totals."
+
+  - id: UNREGISTERED_CONTRACTOR_FINE
+    version: 1
+    kind: statute
+    value: "5000000.00"
+    cite: "NTAA 2025 s.100(2)"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Fine for awarding a contract to an unregistered person. Contingent exposure when payment to an unregistered vendor is attempted."
+
+  - id: LATE_PAYMENT_10PCT
+    version: 1
+    kind: statute
+    value: "0.10"
+    cite: "NTAA 2025 s.65"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "10% of unpaid tax + interest. Informational."
+
+  - id: TAX_ID_FORMAT
+    version: 1
+    kind: statute
+    value: "^[0-9]{8,13}(-[0-9]{4})?$"
+    cite: "NTAA Tax ID regime (format)"
+    status: UNVERIFIED
+    source_url: null
+    note: "Permissive regex. The '13-digit' claim is unverified; a mismatch only shows a warning chip."
+
+  - id: FTZ_DOMESTIC_THRESHOLD
+    version: 1
+    kind: statute
+    value: "0.25"
+    cite: "NTA 2025 (free-zone provisions; Second Schedule paragraph numbers UNVERIFIED)"
+    status: CONFLICTING
+    source_url: null
+    note: "(a) Effective date: the NTA excerpt reads 'from 1 January 2028, in respect of its sales to the customs territory'; some commentary treats it as already live. (b) Boundary: 'at or below 25% keeps exemption' vs '25% or more taxed'. Toggle FTZ_BOUNDARY (default AT_OR_ABOVE_BREACH)."
+
+  - id: FTZ_SUNSET
+    version: 1
+    kind: statute
+    value: "2028-01-01"
+    cite: "NTA 2025 Sch.2 para 5 (per brief)"
+    status: UNVERIFIED
+    source_url: null
+    note: "Countdown shown, labelled UNVERIFIED."
+
+  - id: FTZ_ARMS_LENGTH_OUTSOURCING
+    version: 1
+    kind: statute
+    value: "flag"
+    cite: "NTA 2025 Sch.2 para 7 (per brief)"
+    status: UNVERIFIED
+    source_url: null
+    note: "Flag related-party outsourced transactions; no tax effect computed."
+
+  - id: FTZ_CIT_RATE
+    version: 1
+    kind: statute
+    value: "0.30"
+    cite: "NTA 2025"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Used only in the illustrative interpretation panel."
+
+  - id: MIN_ETR_15
+    version: 1
+    kind: statute
+    value: "0.15"
+    cite: "NTA 2025 s.57"
+    status: SECONDARY_VERIFIED
+    source_url: null
+    note: "Toggle MIN_ETR_ENABLED (default OFF); information row only."
+
+# Buyer AP controls. These are NOT law; they are the buyer's own procurement controls
+# and engine invariants. Thresholds live in policy_settings (status BUYER_POLICY).
+controls:
+  - id: CTRL_FOOTING
+    version: 1
+    kind: control
+    value: "INV-1 lines==subtotal, INV-2 subtotal+VAT==total, within NGN 1.00"
+    cite: "Buyer AP control: invoice arithmetic"
+    status: BUYER_POLICY
+    source_url: null
+    note: "Footing failure routes to NEEDS_HUMAN_REVIEW and is excluded from totals."
+  - id: CTRL_CONFIDENCE
+    version: 1
+    kind: control
+    value: "critical fields: vendor_tin, total_amount, GRN delivered qty"
+    cite: "Buyer AP control: extraction confidence (LLM_MIN_CONFIDENCE)"
+    status: BUYER_POLICY
+    source_url: null
+    note: "A critical field below LLM_MIN_CONFIDENCE routes to NEEDS_HUMAN_REVIEW."
+  - id: CTRL_INTAKE
+    version: 1
+    kind: control
+    value: "pdf/png/jpeg, <=10 MB, magic bytes, SHA-256 idempotency"
+    cite: "Buyer AP control: document intake"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_ENTITY_RESOLUTION
+    version: 1
+    kind: control
+    value: "token_set_ratio >=92 match; 85-91 candidate"
+    cite: "Buyer AP control: vendor master resolution"
+    status: BUYER_POLICY
+    source_url: null
+    note: "Candidates are shown, never auto-merged."
+  - id: CTRL_DUPLICATE
+    version: 1
+    kind: control
+    value: "name fuzz >= DUP_FUZZY_MIN, amount equal, invoice no. distance <= 1, within DUP_WINDOW_DAYS"
+    cite: "Buyer AP control: duplicate payment"
+    status: BUYER_POLICY
+    source_url: null
+    note: "Later document is held in full."
+  - id: CTRL_3WAY_NO_PO
+    version: 1
+    kind: control
+    value: "invoice must reference a known PO"
+    cite: "Buyer AP control: 3-way match"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_3WAY_SHORT_DELIVERY
+    version: 1
+    kind: control
+    value: "pay for GRN delivered quantity"
+    cite: "Buyer AP control: 3-way match (QTY_TOL_DEFAULT / QTY_TOL_FUEL)"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_3WAY_PRICE_VARIANCE
+    version: 1
+    kind: control
+    value: "pay PO price when invoice price exceeds it by more than PRICE_VARIANCE_TOL"
+    cite: "Buyer AP control: 3-way match (PRICE_VARIANCE_TOL)"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_3WAY_UNSIGNED_GRN
+    version: 1
+    kind: control
+    value: "unsigned GRN => hold the line"
+    cite: "Buyer AP control: 3-way match"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_SPLIT_PO
+    version: 1
+    kind: control
+    value: ">=2 POs in [SPLIT_BAND_LOW, SPLIT_BAND_HIGH] x PO_APPROVAL_LIMIT within SPLIT_WINDOW_DAYS summing above the limit"
+    cite: "Buyer AP control: approval-limit splitting"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_GHOST_VENDOR
+    version: 1
+    kind: control
+    value: "vendor NUBAN equals payroll NUBAN, or phone equals payroll phone with a different name"
+    cite: "Buyer AP control: vendor master vs payroll"
+    status: BUYER_POLICY
+    source_url: null
+    note: ""
+  - id: CTRL_CONSERVATION
+    version: 1
+    kind: control
+    value: "net_safe_payable + wht_to_remit + blocked_or_hold == gross"
+    cite: "ShieldLedger engine invariant (not law)"
+    status: BUYER_POLICY
+    source_url: null
+    note: "Exact Decimal equality, asserted for every decision."

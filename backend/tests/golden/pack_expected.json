@@ -1,0 +1,27 @@
+{
+  "_source": "Appendix A of the build brief; independently re-derived by scripts/independent_calc.py (shares no code with app/).",
+  "per_document": {
+    "D01": {"status": "RELEASE_PARTIAL", "flags": ["SHORT_DELIVERY_HOLD"], "gross": "5106250.00", "wht_to_remit": "89300.00", "net_safe_payable": "4710575.00", "blocked_or_hold": "306375.00", "overpayment_blocked": "306375.00", "recoverable_input_vat": "334875.00"},
+    "D02": {"status": "RELEASE", "flags": [], "gross": "1030925.00", "wht_to_remit": "19180.00", "net_safe_payable": "1011745.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "71925.00"},
+    "D03": {"status": "HOLD", "flags": ["DUPLICATE_SUSPECTED"], "gross": "5106250.00", "wht_to_remit": "0.00", "net_safe_payable": "0.00", "blocked_or_hold": "5106250.00", "overpayment_blocked": "5106250.00", "recoverable_input_vat": "0.00"},
+    "D04": {"status": "NEEDS_HUMAN_REVIEW", "flags": ["FOOTING_FAILURE"], "excluded": true},
+    "D05": {"status": "RELEASE", "flags": ["MISSING_TIN_DOUBLE_WHT"], "gross": "698750.00", "wht_to_remit": "26000.00", "net_safe_payable": "672750.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "0.00"},
+    "D06": {"status": "BLOCKED", "flags": ["UNREGISTERED_VENDOR_BLOCKED"], "gross": "1773750.00", "wht_to_remit": "0.00", "net_safe_payable": "0.00", "blocked_or_hold": "1773750.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "0.00"},
+    "D07": {"status": "RELEASE", "flags": ["VAT_OMITTED_SELF_ACCOUNT_ADVISORY"], "gross": "1800000.00", "wht_to_remit": "36000.00", "net_safe_payable": "1764000.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "0.00"},
+    "D08": {"status": "RELEASE_PARTIAL", "flags": ["INVALID_VAT_CHARGE_HOLD"], "gross": "451500.00", "wht_to_remit": "8400.00", "net_safe_payable": "411600.00", "blocked_or_hold": "31500.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "0.00"},
+    "D09": {"status": "RELEASE", "flags": [], "gross": "3225000.00", "wht_to_remit": "150000.00", "net_safe_payable": "3075000.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "225000.00"},
+    "D10": {"status": "RELEASE", "flags": [], "gross": "19887500.00", "wht_to_remit": "370000.00", "net_safe_payable": "19517500.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "1387500.00"},
+    "D11": {"status": "RELEASE", "flags": [], "gross": "11500000.00", "wht_to_remit": "230000.00", "net_safe_payable": "11270000.00", "blocked_or_hold": "0.00", "overpayment_blocked": "0.00", "recoverable_input_vat": "0.00"},
+    "D12": {"status": "RELEASE_PARTIAL", "flags": ["PRICE_VARIANCE_HOLD"], "gross": "1037375.00", "wht_to_remit": "19000.00", "net_safe_payable": "1002250.00", "blocked_or_hold": "16125.00", "overpayment_blocked": "16125.00", "recoverable_input_vat": "71250.00"}
+  },
+  "s105_per_document": {"D01": "35720.00", "D02": "7672.00", "D05": "10400.00", "D07": "14400.00", "D08": "3360.00", "D09": "60000.00", "D10": "148000.00", "D11": "92000.00", "D12": "7600.00"},
+  "summary": {
+    "direct_cash": {"input_vat_identified": "2090550.00", "overpayments_blocked": "5428750.00", "total": "7519300.00"},
+    "contingent_fines_blocked": {"unregistered_contractor_s100_2": "5000000.00", "failure_to_deduct_s105": "379152.00", "total": "5379152.00"},
+    "pending_verification_holds": "1805250.00",
+    "advisories": {"vat_self_account": "135000.00"},
+    "conservation": {"gross": "51617300.00", "net_safe_payable": "43435420.00", "wht_to_remit": "947880.00", "blocked_or_hold": "7234000.00", "ok": true},
+    "needs_review_count": 1
+  },
+  "ftz": {"share_pct": "23.40%", "band": "CRITICAL", "headroom": "21333333.33", "scenario_add": "25000000.00", "scenario_share_pct_4dp": "25.2683%", "scenario_band": "BREACHED", "profit": "200000000.00", "A_base": "14040000.00", "B": "60000000.00", "A_scenario": "15160975.61"}
+}
