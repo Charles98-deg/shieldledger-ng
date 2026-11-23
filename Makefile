@@ -1,7 +1,8 @@
+SHELL := /bin/bash
 PY := $(CURDIR)/.venv/bin/python
 PIP := $(CURDIR)/.venv/bin/pip
 
-.PHONY: setup seed test dev backend frontend build reset-demo pack register smoke-gemini calc
+.PHONY: setup seed test dev backend frontend build reset-demo pack register smoke-gemini calc evidence
 
 setup:
 	python3 -m venv .venv
@@ -46,3 +47,7 @@ smoke-gemini:
 
 calc:
 	$(PY) scripts/independent_calc.py
+
+# Full test suite + production build; writes reports/test_summary.txt and reports/build_size.txt.
+evidence:
+	PY=$(PY) bash scripts/evidence.sh

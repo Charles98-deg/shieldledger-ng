@@ -3,6 +3,8 @@
 - **Recall over traps:** 10/10 = 100%
 - **False positives over controls:** 0/7
 
+> Synthetic seeded pack: a regression check, not a measure of general accuracy.
+
 On the seeded pack (12 invoices, 2 PO-pattern traps/controls, 1 vendor-pattern trap/control). This is a regression check on fictional seeded data, not a measure of general accuracy.
 
 | Item | Kind | Scenario | Expected | Got | Result |

@@ -26,7 +26,9 @@ make dev        # API on :8000, UI on :5173
 # open http://localhost:5173  → click “Load demo pack”
 ```
 
-Other targets: `make test` runs the full suite, `make reset-demo` resets and re-ingests the pack (about 1–2 s warm, under 10 s on a cold start), and `make build` builds the production UI. `make pack` regenerates the demo PDFs, `make register` regenerates `docs/STATUTORY_REGISTER.md`, `make calc` runs the independent golden calculator, and `make smoke-gemini` runs the Gemini check.
+> **Extraction in the demo:** the demo pack runs on the **offline parser** (`offline_regex`); no Gemini call is made and no key is needed. Gemini extraction is optional. Its structured output was **validated once, on 2026-11-23**, with `gemini-3.5-flash-lite` (see §9).
+
+Other targets: `make test` runs the full suite, `make reset-demo` resets and re-ingests the pack (about 1–2 s warm, under 10 s on a cold start), `make build` builds the production UI, and `make evidence` runs the tests and the production build and writes `reports/test_summary.txt` and `reports/build_size.txt`. `make pack` regenerates the demo PDFs, `make register` regenerates `docs/STATUTORY_REGISTER.md`, `make calc` runs the independent golden calculator, and `make smoke-gemini` runs the Gemini check.
 
 Optional: copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable Gemini transcription (needed for PNG/JPEG invoices).
 
@@ -87,7 +89,7 @@ Everything in this repository was built during the sprint.
   - FTZ monitor: share, bands, headroom, scenario and two interpretations.
   - `decide.py` orchestration.
 - **API:** documents, evaluate, decisions + evidence, summary, policies (audited), rules, FTZ summary/scenario, audit list/verify, CSV export, dev reset, health.
-- **Frontend:** the Payment Run, Exposure Summary and FTZ Monitor screens. Payment Run is master-detail: a summary strip that filters a case list (exceptions first), with a case file holding the decision stamp, settlement tape, why and evidence. Also a policy slide-over, the Statutory Register drawer, and an SVG gauge and bars with no chart library. Money is formatted with BigInt kobo, and the layout works down to 375 px.
+- **Frontend:** the Payment Run, Exposure Summary and FTZ Monitor screens. Payment Run is master-detail: a summary strip that filters a case list (exceptions first), with a case file holding the decision stamp, settlement tape, why and evidence. Also a policy slide-over, the Statutory Register drawer, and an SVG gauge and bars with no chart library. Money is formatted with BigInt kobo, and the layout was checked at 1400, 1024 and 390 px.
 - **Data & tooling:** fictional seed pack (12 invoices, PO/GRN, registry, payroll, PO/vendor traps, FTZ ledger), deterministic PDF generator, independent golden calculator, register generator, Gemini smoke script, trap report.
 
 **Pre-Existing:** none. No code existed before 22 Nov 2026. `docs/planning/` is reserved for pre-sprint notes only (no code).
@@ -107,6 +109,16 @@ Every rule shown in the UI carries one of these labels:
 Nothing is labelled `VERIFIED_PRIMARY`.
 
 **Most rule citations come from law-firm and tax-practitioner summaries of the gazetted Acts; verify against the Official Gazette (No. 117, Vol. 112, 26 June 2025) before relying on them.**
+
+> **Verify against the Official Gazette before relying on this**
+>
+> | Rule | Status | What the app does |
+> |---|---|---|
+> | WHT on goods and construction (2%) | `BRIEF_ONLY` | Applies the rate, labelled BRIEF_ONLY on every evidence step |
+> | Double WHT when the supplier has no TIN (`WHT_NO_TIN_DOUBLE`) | `BRIEF_ONLY` | Applies the doubled rate, labelled BRIEF_ONLY |
+> | Small-business VAT effect (`SMALL_BUSINESS_VAT_EFFECT`) | `UNVERIFIED` | Holds only the VAT portion; never rejects the invoice or charges money on it |
+> | FTZ 25% line: effective date and the boundary at exactly 25% (`FTZ_DOMESTIC_THRESHOLD`) | `CONFLICTING` | Shows both readings; the boundary is a toggle (`FTZ_BOUNDARY`) |
+> | WHT on rent (5% vs 10%) | `CONFLICTING` | No default; policy required. Rent WHT is not computed until the buyer sets `WHT_RENT_RATE` |
 
 Open items (full list in [`docs/STATUTORY_REGISTER.md`](docs/STATUTORY_REGISTER.md)):
 
@@ -132,7 +144,7 @@ Open items (full list in [`docs/STATUTORY_REGISTER.md`](docs/STATUTORY_REGISTER.
 make test        # cd backend && pytest
 ```
 
-Result on 2026-11-23: **142 passed** (~45 s). No API key set; every pack document was extracted by `offline_regex`.
+Result on 2026-11-23: **151 passed in 49.5 s** (`make evidence`, output in [`reports/test_summary.txt`](reports/test_summary.txt)). No API key set; every pack document was extracted by `offline_regex`.
 
 - Golden/unit T01–T20 are mapped to files in `backend/tests/` (`test_money_wht_vat.py`, `test_footing_gates.py`, `test_three_way.py`, `test_duplicates.py`, `test_split_po.py`, `test_ghost_vendor.py`, `test_registry_guard.py`, `test_ftz.py`, `test_audit_idempotency.py`, `test_offline_parser.py`, `test_no_float.py`, `test_e2e_pack.py`).
 - Hypothesis properties H1–H6 are in `test_properties.py`: conservation, bounds, duplicate symmetry and invariance, FTZ headroom optimality, Decimal round-trip through DB and API, and quantize idempotence.
@@ -146,6 +158,8 @@ Result on 2026-11-23: **142 passed** (~45 s). No API key set; every pack documen
   - 1 invoice needs review
 
 **Trap suite.** On the seeded pack (12 invoices, 2 PO-pattern traps/controls, 1 vendor-pattern trap/control): recall over traps **10/10 (100%)** and false positives over controls **0/7**. This is a regression check on fictional seeded data, not a claim of general accuracy. The full table is in [`reports/trap_report.md`](reports/trap_report.md), regenerated by every test run.
+
+> Synthetic seeded pack: a regression check, not a measure of general accuracy.
 
 | Item | Kind | Scenario | Result |
 |---|---|---|---|
@@ -162,7 +176,7 @@ Result on 2026-11-23: **142 passed** (~45 s). No API key set; every pack documen
 | D02, D09, D10, D11 | controls | price within tol. / clean / clean / AGO exempt within fuel tol. | PASS (no flags) |
 | S0 ×2, G0 | controls | single near-limit PO; 12 days apart; NUBAN with no payroll match | PASS (no flags) |
 
-Frontend: `npm run build` produces **59.98 KB gzip** JS and 4.51 KB gzip CSS (budget 200 KB). The demo path was checked in headless Chrome at 1400 px and 375 px, with no horizontal scroll at 375 px.
+Frontend: `npm run build` produces **66.05 KB gzip** JS (211.03 KB raw) and **6.26 KB gzip** CSS (28.14 KB raw), against a 200 KB gzip JS budget; output in [`reports/build_size.txt`](reports/build_size.txt). Responsive check on 2026-11-23 against the production build in headless Chrome: Payment Run, Exposure Summary and FTZ Monitor at **1400, 1024 and 390 px**, with no horizontal scroll at any width. At 1400 and 1024 px the case file sits beside the list; at 390 px it opens full-screen on selection.
 
 ## 8. Scalability & production path
 

@@ -27,6 +27,7 @@ CONTROLS = {
 def test_trap_suite(pack_client):
     rows = {d["doc_label"]: {f["code"] for f in d["flags"]} for d in pack_client.get("/api/decisions").json()}
     lines = ["# Trap report (seeded demo pack)", "",
+             "> Synthetic seeded pack: a regression check, not a measure of general accuracy.", "",
              "On the seeded pack (12 invoices, 2 PO-pattern traps/controls, 1 vendor-pattern trap/control). "
              "This is a regression check on fictional seeded data, not a measure of general accuracy.", "",
              "| Item | Kind | Scenario | Expected | Got | Result |", "|---|---|---|---|---|---|"]

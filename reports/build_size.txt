@@ -1,0 +1,14 @@
+# make evidence: frontend production build
+date: 2026-11-23T14:06:52Z
+command: cd frontend && npm run build
+
+vite v5.4.11 building for production...
+✓ 55 modules transformed.
+dist/index.html                   1.02 kB │ gzip:  0.57 kB
+dist/assets/index-D5OSw3Ca.css   28.14 kB │ gzip:  6.26 kB
+dist/assets/index-DR7N8cJK.js   211.03 kB │ gzip: 66.05 kB
+✓ built in 16.89s
+
+gzip -9 sizes (budget: 200 KB gzip JS):
+  frontend/dist/assets/index-DR7N8cJK.js     211141 bytes raw    65827 bytes gzip
+  frontend/dist/assets/index-D5OSw3Ca.css     28136 bytes raw     6249 bytes gzip
