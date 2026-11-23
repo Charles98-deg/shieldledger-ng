@@ -14,12 +14,33 @@ ShieldLedger NG checks a batch of supplier invoices **before** a Nigerian compan
 
 TODO-VIDEO-URL
 
-## 3. 60-second quickstart
+## 3. Quickstart (one paste)
 
-Requires Python 3.11+, Node 18+ and `make`. **No API key needed.**
+**Prerequisites:** Git, Python 3.11+ and Node.js 18.x or 20+ (Vite 5 doesn't support Node 19). **No API key needed.**
+
+On Windows you can install all three with one line in PowerShell, then open a new terminal:
+
+```powershell
+winget install Git.Git; winget install Python.Python.3.12; winget install OpenJS.NodeJS.LTS
+```
+
+**Windows (PowerShell):**
+
+```powershell
+git clone https://github.com/Charles98-deg/shieldledger-ng.git; cd shieldledger-ng; python scripts/quickstart.py
+```
+
+**macOS / Linux:**
 
 ```bash
-git clone <this repo> shieldledger-ng && cd shieldledger-ng
+git clone https://github.com/Charles98-deg/shieldledger-ng.git && cd shieldledger-ng && python3 scripts/quickstart.py
+```
+
+The script checks your Python and Node versions, copies `.env.example` to `.env` if there isn't one, creates `backend/.venv` and installs the requirements, runs `npm ci` in `frontend`, and seeds the database. It then starts the API on :8000 and the UI on :5173 and opens http://localhost:5173. **Click Load demo pack.** Press Ctrl+C to stop both servers. It is safe to re-run: steps that are already done are skipped. `python scripts/quickstart.py --test` runs the test suite instead of starting the servers.
+
+**For Linux/macOS developers (`make`):**
+
+```bash
 make setup      # venv + pip install + npm install
 make seed       # create SQLite DB with the fictional master data
 make dev        # API on :8000, UI on :5173
@@ -30,7 +51,7 @@ make dev        # API on :8000, UI on :5173
 
 Other targets: `make test` runs the full suite, `make reset-demo` resets and re-ingests the pack (about 1–2 s warm, under 10 s on a cold start), `make build` builds the production UI, and `make evidence` runs the tests and the production build and writes `reports/test_summary.txt` and `reports/build_size.txt`. `make pack` regenerates the demo PDFs, `make register` regenerates `docs/STATUTORY_REGISTER.md`, `make calc` runs the independent golden calculator, and `make smoke-gemini` runs the Gemini check.
 
-Optional: copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable Gemini transcription (needed for PNG/JPEG invoices).
+Optional: set `GEMINI_API_KEY` in `.env` (the quickstart copies it from `.env.example`; with `make`, copy it yourself) to enable Gemini transcription (needed for PNG/JPEG invoices).
 
 ## 4. Architecture
 

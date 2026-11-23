@@ -1,0 +1,21 @@
+# Keep line endings stable on every OS. Text files are stored and checked out with LF, so a
+# Windows checkout (core.autocrlf=true) can't change seed files, rule packs or scripts.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary: never convert. The demo PDFs are hashed (SHA-256 idempotency), so bytes must not change.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.db binary
+*.sqlite binary
