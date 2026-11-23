@@ -141,7 +141,7 @@ def decide(ctx: InvoiceContext) -> Decision:
                                       inputs={"po_reference": inv.po_reference or "MISSING"},
                                       computation="no purchase order matched", result=f"HOLD {fmt_naira(d.gross)}")]
         return _conserve(d)
-    m = match3way.match(inv, ctx.po, ctx.grns, p, src)
+    m = match3way.match(inv, ctx.po, ctx.grns, p, src, ctx.snippets)
     flags += m.flags
     evidence += m.steps
 

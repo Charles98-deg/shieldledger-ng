@@ -86,10 +86,13 @@ def match(
     grns: dict[int, GRN],
     policies: Policies,
     source_doc: str | None = None,
+    snippets: dict[str, str] | None = None,
 ) -> MatchResult:
     res = MatchResult()
     tol_price = policies.d("PRICE_VARIANCE_TOL")
+    snippets = snippets or {}
     for idx, (il, pl) in enumerate(_pair_lines(invoice.lines, po.lines), start=1):
+        snip = snippets.get(f"line[{idx}]")
         if pl is None:
             res.lines.append(LineResult(idx, il.description, il.amount, ZERO, None, VatTreatment.STANDARD, pending=True))
             res.flags.append(Flag(code=FlagCode.NO_PO_MATCH, detail=f"invoice line {idx} has no matching PO line"))
@@ -117,6 +120,7 @@ def match(
         threshold = grn.delivered_qty * (1 + tol_qty)
         res.steps.append(step(
             "CTRL_3WAY_SHORT_DELIVERY", field=f"grn[{pl.line_no}].delivered_qty", source_doc=source_doc, policy=tol_label,
+            raw_snippet=snip,
             inputs={"invoiced_qty": str(il.quantity), "grn_delivered_qty": str(grn.delivered_qty), "qty_tol": pct(tol_qty, 1)},
             computation=f"{grn.delivered_qty} × (1 + {pct(tol_qty, 1)}) = {threshold} vs invoiced {il.quantity}",
             result="short delivery" if threshold < il.quantity else "within tolerance",
@@ -129,7 +133,7 @@ def match(
         variance = (il.unit_price - pl.unit_price) / pl.unit_price
         res.steps.append(step(
             "CTRL_3WAY_PRICE_VARIANCE", field=f"line[{pl.line_no}].unit_price", source_doc=source_doc,
-            policy=f"PRICE_VARIANCE_TOL={policies.s('PRICE_VARIANCE_TOL')}",
+            raw_snippet=snip, policy=f"PRICE_VARIANCE_TOL={policies.s('PRICE_VARIANCE_TOL')}",
             inputs={"invoice_unit_price": fmt_naira(il.unit_price), "po_unit_price": fmt_naira(pl.unit_price)},
             computation=f"({fmt_naira(il.unit_price)} − {fmt_naira(pl.unit_price)}) / {fmt_naira(pl.unit_price)} = {pct(variance)} vs tol {pct(tol_price, 1)} (hold if strictly greater)",
             result="price variance" if variance > tol_price else "within tolerance",

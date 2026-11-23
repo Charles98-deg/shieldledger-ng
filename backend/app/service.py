@@ -32,6 +32,9 @@ def _snippets(raw_json: str | None) -> dict[str, str]:
         s = getattr(raw, name).raw_snippet
         if s:
             out[name] = s
+    for i, ln in enumerate(raw.line_items, start=1):
+        if ln.amount.raw_snippet:
+            out[f"line[{i}]"] = ln.amount.raw_snippet
     return out
 
 
