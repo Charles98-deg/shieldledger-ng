@@ -18,6 +18,8 @@ TODO-VIDEO-URL
 
 **Prerequisites:** Git, Python 3.11+ and Node.js 18.x or 20+ (Vite 5 doesn't support Node 19). **No API key needed.**
 
+**Tested Node versions:** 22 LTS (22.23.4) and 26 LTS (26.13.0), with `npm ci` and the production build. If you have a newer Node and `npm ci` fails, run `npm install` in `frontend` instead. The quickstart falls back to it automatically and prints npm's full output.
+
 On Windows you can install all three with one line in PowerShell, then open a new terminal:
 
 ```powershell
@@ -34,7 +36,7 @@ python scripts/quickstart.py
 
 On macOS/Linux use `python3` if `python` isn't found.
 
-The script checks your Python and Node versions, copies `.env.example` to `.env` if there isn't one, creates `backend/.venv` and installs the requirements, runs `npm ci` in `frontend`, and seeds the database. It then starts the API on :8000 and the UI on :5173 and opens http://localhost:5173. **Click Load demo pack.** Press Ctrl+C to stop both servers. It is safe to re-run: steps that are already done are skipped. `python scripts/quickstart.py --test` runs the test suite instead of starting the servers.
+The script checks your Python and Node versions, copies `.env.example` to `.env` if there isn't one, creates `backend/.venv` and installs the requirements, runs `npm ci` in `frontend` (or `npm install` if `npm ci` fails), and seeds the database. It then starts the API on :8000 and the UI on :5173 and opens http://localhost:5173. **Click Load demo pack.** Press Ctrl+C to stop both servers. It is safe to re-run: steps that are already done are skipped. `python scripts/quickstart.py --test` runs the test suite instead of starting the servers.
 
 **Troubleshooting:** If npm fails with `Class extends value undefined is not a constructor or null`, the npm install on that machine is damaged. Reinstall Node.js LTS from nodejs.org (or run its installer and choose Repair), open a new terminal, and run `python scripts/quickstart.py` again.
 

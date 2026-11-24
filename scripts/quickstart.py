@@ -5,7 +5,7 @@
     python scripts/quickstart.py --test   set up, then run the backend test suite instead
 
 Steps: check Python/Node versions, copy .env.example to .env if missing, create backend/.venv and
-pip install, npm ci in frontend, seed the database, start the API on :8000 and the UI on :5173,
+pip install, npm ci in frontend (falling back to npm install if it fails), seed the database, start the API on :8000 and the UI on :5173,
 open the browser. Ctrl+C stops both servers. Safe to re-run.
 """
 import argparse
@@ -70,6 +70,29 @@ def run(cmd, cwd, shell=False):
         fail("could not run: %s" % shown)
     except subprocess.CalledProcessError as e:
         fail("this step failed (exit %s): %s" % (e.returncode, shown))
+
+
+def run_logged(cmd, cwd, shell=False):
+    """Run a command, stream its output live and also keep all of it. Returns (exit code, output)."""
+    shown = cmd if isinstance(cmd, str) else " ".join(str(c) for c in cmd)
+    try:
+        proc = subprocess.Popen(cmd, cwd=str(cwd), shell=shell, env=child_env(), stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        fail("could not run: %s" % shown)
+    lines = []
+    for line in proc.stdout:
+        print(line, end="", flush=True)
+        lines.append(line)
+    return proc.wait(), "".join(lines)
+
+
+def print_full_output(title, output):
+    """Reprint a failed step's complete output in one block, so the first error is not lost in scrollback."""
+    bar = "-" * 60
+    print("\n%s\n%s\n%s" % (bar, title, bar), file=sys.stderr)
+    print(output.rstrip() or "(no output)", file=sys.stderr)
+    print(bar, file=sys.stderr, flush=True)
 
 
 def digest(*files):
@@ -151,11 +174,28 @@ def ensure_node_modules():
     if marker.exists() and marker.read_text().strip() == want:
         say("frontend/node_modules up to date, skipping npm")
         return
-    cmd = "ci" if lock.exists() else "install"
-    say("npm %s in frontend (first run takes a minute)" % cmd)
-    argv, shell = npm(cmd, "--no-audit", "--no-fund")
-    run(argv, FRONTEND, shell=shell)
-    marker.write_text(want)
+    if lock.exists():
+        say("npm ci in frontend (first run takes a minute)")
+        argv, shell = npm("ci", "--no-audit", "--no-fund")
+        code, output = run_logged(argv, FRONTEND, shell=shell)
+        if code == 0:
+            marker.write_text(want)
+            return
+        print_full_output("npm ci failed (exit %s). Full npm output:" % code, output)
+        say("npm ci failed; falling back to npm install")
+    else:
+        say("no package-lock.json; running npm install in frontend (first run takes a minute)")
+    argv, shell = npm("install", "--no-audit", "--no-fund")
+    code, output = run_logged(argv, FRONTEND, shell=shell)
+    if code != 0:
+        print_full_output("npm install failed (exit %s). Full npm output:" % code, output)
+        fail("npm could not install the frontend packages; see the full npm output above.\n"
+             "  If it says 'Class extends value undefined is not a constructor or null', npm itself is damaged:\n"
+             "  reinstall Node.js LTS from https://nodejs.org/ (or run its installer and choose Repair),\n"
+             "  open a new terminal and run again.")
+    say("npm install succeeded")
+    # npm install may rewrite package-lock.json, so record the digest it leaves behind.
+    marker.write_text(digest(lock, FRONTEND / "package.json"))
 
 
 def db_seeded():
