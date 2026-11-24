@@ -36,6 +36,8 @@ On macOS/Linux use `python3` if `python` isn't found.
 
 The script checks your Python and Node versions, copies `.env.example` to `.env` if there isn't one, creates `backend/.venv` and installs the requirements, runs `npm ci` in `frontend`, and seeds the database. It then starts the API on :8000 and the UI on :5173 and opens http://localhost:5173. **Click Load demo pack.** Press Ctrl+C to stop both servers. It is safe to re-run: steps that are already done are skipped. `python scripts/quickstart.py --test` runs the test suite instead of starting the servers.
 
+**Troubleshooting:** If npm fails with `Class extends value undefined is not a constructor or null`, the npm install on that machine is damaged. Reinstall Node.js LTS from nodejs.org (or run its installer and choose Repair), open a new terminal, and run `python scripts/quickstart.py` again.
+
 **For Linux/macOS developers (`make`):**
 
 ```bash
