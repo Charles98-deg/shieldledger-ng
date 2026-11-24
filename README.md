@@ -12,7 +12,9 @@ ShieldLedger NG checks a batch of supplier invoices **before** a Nigerian compan
 
 ## 2. Demo video
 
-TODO-VIDEO-URL
+[![ShieldLedger NG demo video](https://img.youtube.com/vi/7Wlx5ZpqVqI/hqdefault.jpg)](https://youtu.be/7Wlx5ZpqVqI)
+
+▶️ Watch the demo on YouTube: https://youtu.be/7Wlx5ZpqVqI
 
 ## 3. Quickstart (one paste)
 
