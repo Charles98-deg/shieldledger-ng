@@ -24,17 +24,15 @@ On Windows you can install all three with one line in PowerShell, then open a ne
 winget install Git.Git; winget install Python.Python.3.12; winget install OpenJS.NodeJS.LTS
 ```
 
-**Windows (PowerShell):**
+**Any shell (PowerShell, Command Prompt, bash, zsh):**
 
-```powershell
-git clone https://github.com/Charles98-deg/shieldledger-ng.git; cd shieldledger-ng; python scripts/quickstart.py
+```
+git clone https://github.com/Charles98-deg/shieldledger-ng.git
+cd shieldledger-ng
+python scripts/quickstart.py
 ```
 
-**macOS / Linux:**
-
-```bash
-git clone https://github.com/Charles98-deg/shieldledger-ng.git && cd shieldledger-ng && python3 scripts/quickstart.py
-```
+On macOS/Linux use `python3` if `python` isn't found.
 
 The script checks your Python and Node versions, copies `.env.example` to `.env` if there isn't one, creates `backend/.venv` and installs the requirements, runs `npm ci` in `frontend`, and seeds the database. It then starts the API on :8000 and the UI on :5173 and opens http://localhost:5173. **Click Load demo pack.** Press Ctrl+C to stop both servers. It is safe to re-run: steps that are already done are skipped. `python scripts/quickstart.py --test` runs the test suite instead of starting the servers.
 
